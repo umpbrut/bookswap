@@ -1,18 +1,18 @@
-# Guida Git per il Progetto BookSwap
+## Guida Git per il Progetto BookSwap
 
-# CONFIGURAZIONE INIZIALE (Solo la prima volta)
+### CONFIGURAZIONE INIZIALE (Solo la prima volta)
 Da eseguire una sola volta per configurare l'identità sul computer:
 
 git config --global user.name "username"
 git config --global user.email "tua@email.it"
 
-# PRIMO ACCESSO (Download del progetto)
+### PRIMO ACCESSO (Download del progetto)
 Se non hai ancora la cartella sul tuo PC:
 
 git clone https://github.com/umpbrut/bookswap.git
 cd bookswap
 
-# FLUSSO DI LAVORO QUOTIDIANO
+### FLUSSO DI LAVORO QUOTIDIANO
 Seguire questi passaggi ogni volta che si lavora al progetto:
 
 1. Aggiornare il progetto locale:
