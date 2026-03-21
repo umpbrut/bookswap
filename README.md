@@ -1,17 +1,32 @@
-"SOLO PER LA PRIMA VOLTA:
-git config --global user.name "username"
+# Guida Git per il Progetto BookSwap
+
+## CONFIGURAZIONE INIZIALE (Solo la prima volta)
+Da eseguire una sola volta per configurare l'identità sul computer:
+
+git config --global user.name "Tuo Nome"
 git config --global user.email "tua@email.it"
 
-TUTTE LE VOLTE QUANDO SI ACCENDE IL PC PER COLLEGARSI:
+## PRIMO ACCESSO (Download del progetto)
+Se non hai ancora la cartella sul tuo PC:
+
 git clone https://github.com/umpbrut/bookswap.git
 cd bookswap
-git checkout **vostro cognome** --> per cambiare il ramo di lavoro
-git pull origin main --> per scaricare in locale ultima versione aggiornata
 
-git add **nomefile** oppure
-git add * --> aggiunge i file che avete modificato
+## FLUSSO DI LAVORO QUOTIDIANO
+Seguire questi passaggi ogni volta che si lavora al progetto:
 
-git commit -m " nome del snapshot " --> server per fare un snapshot per mandare dopo sul main.
-Di solito si scrive in modo genarale cosa e' stato aggiunto.
+1. Aggiornare il progetto locale:
+git checkout vostro_cognome
+git pull origin main
 
-git push origin **vostro cognome** --> con questo comando salvate le modifiche sul vostro ramo, ma non sul MAIN!" 
+2. Aggiungere le modifiche fatte:
+git add *
+
+3. Creare uno snapshot (Commit):
+git commit -m "Descrizione di cosa hai aggiunto o modificato"
+
+4. Inviare le modifiche su GitHub:
+git push origin vostro_cognome
+
+NOTA BENE: Il comando push salva le modifiche sul vostro ramo personale. 
+Il Leader controllerà il codice su GitHub prima di unirlo al ramo principale (MAIN).
