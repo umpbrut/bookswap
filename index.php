@@ -1,0 +1,1 @@
+"<?php $govoni = true;" 
