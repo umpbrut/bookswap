@@ -1,2 +1,3 @@
-"<?php $govoni = true;" 
-"$ciao = 2;" 
+<?php $govoni = true; 
+$ciao = 2;
+$prova=3;
