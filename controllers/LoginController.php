@@ -25,10 +25,11 @@ class LoginController{
         $emails = $this->model->selectEmail();
         if(in_array($email,$emails)){
             $dati=$this->model->selectEmailPassword($email);
-                if(password_verify($password, $dati['password'])){
+                // if(password_verify($password, $dati['password'])){
+                if($password == $dati['password']){ //solo perchè non ho messo la password hashata
                     $_SESSION['email']=$email;
-                    $_SESSION['name']=$dati['name'];
-                    $_SESSION['customer_id']=$dati['customer_id'];
+                    $_SESSION['nome']=$dati['nome'];
+                    $_SESSION['id_utente']=$dati['id_utente'];
                 }
         }
         header('location:index.php');
@@ -41,19 +42,17 @@ class LoginController{
     }
 
     public function store(){
-        $name = trim($_POST['name']);
-        $surname = trim($_POST['surname']);
-        $dob =trim($_POST['dob']);
-        $gender =trim($_POST['gender']);
+        $nome = trim($_POST['nome']);
+        $cognome = trim($_POST['cognome']);
         $email =trim($_POST['email']);
-        $address=trim($_POST['address']);
         $password=trim($_POST['password']);
+        $num_tel=trim($_POST['num_tel']);
 
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
             $_SESSION['error'] = "Formato email non valido";
         }
         else{
-            $param=[$name,$surname,$dob,$gender,$email,$address,password_hash($password,PASSWORD_DEFAULT)];
+            $param=[$nome,$cognome,$email,$password,$num_tel,password_hash($password,PASSWORD_DEFAULT)];
             $this->model->insertRecord($param);
             $_SESSION['error'] = "Registrazione avvenuta ✅";
         }

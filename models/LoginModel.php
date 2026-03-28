@@ -6,7 +6,7 @@ require_once 'config/dbconnect.php';
 class LoginModel{
     public function selectEmailPassword($param) : array{
         $pdo = DB::connect();
-        $dql = "SELECT `email`, `password`, `name`, `customer_id` FROM st_customers
+        $dql = "SELECT `email`, `password`, `nome`, `id_utente` FROM Utenti
         WHERE email=?";
 
         $stm = $pdo->prepare($dql);
@@ -17,7 +17,7 @@ class LoginModel{
 
     public function selectEmail() : array{
         $pdo = DB::connect();
-        $dql = "SELECT `email` FROM st_customers;";
+        $dql = "SELECT `email` FROM Utenti;";
 
         $stm = $pdo->prepare($dql);
         $stm->execute();
@@ -27,8 +27,8 @@ class LoginModel{
 
     public function insertRecord(array $param) : bool{
         $pdo = DB::connect();
-        $dml="INSERT INTO st_customers(`name`,`surname`,`dob`,`gender`,`email`,`address`,`password`)
-        VALUES(?,?,?,?,?,?,?)";
+        $dml="INSERT INTO Utenti(`nome`,`cognome`,`email`,`password`,`num_tel`)
+        VALUES(?,?,?,?,?)";
 
         $stm = $pdo->prepare($dml);
         $stm->execute($param);
