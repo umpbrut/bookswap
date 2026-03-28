@@ -2,8 +2,8 @@
 session_start();
 define('APP',true);
 
-if(isset($_SESSION['id_utente'])){
-    $page=$_GET['page'] ?? 'libri';
+if(isset($_SESSION['customer_id'])){
+    $page=$_GET['page'] ?? 'categories';
     $action=$_GET['action'] ?? 'index';
     $filename=ucfirst($page).'Controller';
 }
