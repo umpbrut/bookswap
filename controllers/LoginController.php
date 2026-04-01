@@ -25,8 +25,8 @@ class LoginController{
         $emails = $this->model->selectEmail();
         if(in_array($email,$emails)){
             $dati=$this->model->selectEmailPassword($email);
-                // if(password_verify($password, $dati['password'])){
-                if($password == $dati['password']){ //solo perchè non ho messo la password hashata
+                if(password_verify($password, $dati['password'])){
+                // if($password == $dati['password']){ //solo perchè non ho messo la password hashata
                     $_SESSION['email']=$email;
                     $_SESSION['nome']=$dati['nome'];
                     $_SESSION['id_utente']=$dati['id_utente'];
@@ -52,7 +52,7 @@ class LoginController{
             $_SESSION['error'] = "Formato email non valido";
         }
         else{
-            $param=[$nome,$cognome,$email,$password,$num_tel,password_hash($password,PASSWORD_DEFAULT)];
+            $param=[$nome,$cognome,$email,password_hash($password,PASSWORD_DEFAULT),$num_tel];
             $this->model->insertRecord($param);
             $_SESSION['error'] = "Registrazione avvenuta ✅";
         }
