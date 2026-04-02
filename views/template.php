@@ -19,6 +19,7 @@
             <nav>
                 <?php
                     echo "<a href='index.php?page=$this->page&action=index'>HOME</a> | ";
+                    echo "<a href='index.php?page=$this->page&action=create'>CREATE ANNUNCIO</a> | ";
                 ?>
             </nav>
 
