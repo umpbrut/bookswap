@@ -1,10 +1,7 @@
 <form action="index.php?page=annunci&action=store" method="post">
-
 <label for="ricerca-libri">Cerca un libro:</label>
 <input type="text" id="ricerca-libri" list="lista-titoli" placeholder="Inizia a scrivere il titolo..." autocomplete="off">
-
 <input type="hidden" name="id_libro" id="id_libro_hidden">
-
 <datalist id="lista-titoli">
   <?php
     foreach($libri as $libro){
