@@ -17,6 +17,11 @@ class AnnunciController{
         include 'views/template.php';
     }
 
+    public function personal(){
+        $table = $this->model->selectAnnunciByUtente();
+        include 'views/template.php';
+    }
+
     public function create(){
         $libri=$this->model->selectTitoli();
         $view='views/annunci_create_form.php';
@@ -36,6 +41,16 @@ class AnnunciController{
         $this->model->insertRecord($param);
 
         header('location:index.php');
+        exit;
+    }
+
+    public function destroy(){
+        $id=$_GET['id_annuncio'];
+
+        $param=[$id];
+        $this->model->deleteRecord($param);
+
+        header("location:index.php?page=annunci&action=personal");
         exit;
     }
 }

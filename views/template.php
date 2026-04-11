@@ -25,21 +25,26 @@
     <div>
         <header>
             <h1>Gestione Applicativo</h1>
-            <div>
-                <a href="index.php?page=annunci&action=index">ANNUNCI</a>
-            </div>
         </header>
 
         <main>
             <nav>
                 <?php
-                    echo "<a href='index.php?page=$this->page&action=index'>HOME</a> | ";
+                    echo "<a href='index.php?page=$this->page&action=index'>ANNUNCI</a> | ";
                     echo "<a href='index.php?page=$this->page&action=create'>CREATE ANNUNCIO</a> | ";
+                    echo "<a href='index.php?page=$this->page&action=personal'>MIEI ANNUNCI</a> | ";
                 ?>
             </nav>
 
             <section>
-                <?php include 'table.php'; ?>
+                <?php //include 'table.php';
+                $action = $_GET['action'] ?? 'index';
+                    if ($action == 'personal'){
+                        include 'table_personal.php';
+                    } else {
+                        include 'table.php';
+                    }       
+                ?>
             </section>
 
             <section>

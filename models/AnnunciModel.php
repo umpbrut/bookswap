@@ -13,6 +13,16 @@ class AnnunciModel{
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function selectAnnunciByUtente(array $param=[]) : array{
+        $pdo = DB::connect();
+        $id=$_SESSION['id_utente'];
+        $dql = "SELECT * FROM Annunci WHERE id_creatore = $id";
+
+        $stm = $pdo->prepare($dql);
+        $stm->execute($param);
+        return $stm->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function selectTitoli(array $param=[]) : array{
         $pdo = DB::connect();
         $dql = "SELECT id_libro,titolo FROM Libri";
@@ -26,6 +36,16 @@ class AnnunciModel{
         $pdo = DB::connect();
         $dml="INSERT INTO Annunci(`prezzo`,`data`,`ora`,`luogo`,`id_creatore`,`id_libro`,`condizioni`)
         VALUES(?,?,?,?,?,?,?)";
+
+        $stm = $pdo->prepare($dml);
+        $stm->execute($param);
+
+        return $stm->rowCount() !== 0;
+    }
+
+    public function deleteRecord(array $param) : bool{
+        $pdo = DB::connect();
+        $dml="DELETE FROM Annunci WHERE id_annuncio = ?";
 
         $stm = $pdo->prepare($dml);
         $stm->execute($param);
