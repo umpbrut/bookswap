@@ -17,6 +17,11 @@ class AnnunciController{
         include 'views/template.php';
     }
 
+    public function personal(){
+        $table = $this->model->selectAnnunciByUtente();
+        include 'views/template.php';
+    }
+
     public function create(){
         $libri=$this->model->selectTitoli();
         $view='views/annunci_create_form.php';

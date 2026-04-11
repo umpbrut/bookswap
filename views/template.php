@@ -35,6 +35,7 @@
                 <?php
                     echo "<a href='index.php?page=$this->page&action=index'>HOME</a> | ";
                     echo "<a href='index.php?page=$this->page&action=create'>CREATE ANNUNCIO</a> | ";
+                    echo "<a href='index.php?page=$this->page&action=personal'>MIEI ANNUNCI</a> | ";
                 ?>
             </nav>
 

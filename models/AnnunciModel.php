@@ -13,6 +13,16 @@ class AnnunciModel{
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function selectAnnunciByUtente(array $param=[]) : array{
+        $pdo = DB::connect();
+        $id=$_SESSION['id_utente'];
+        $dql = "SELECT * FROM Annunci WHERE id_utente = $id";
+
+        $stm = $pdo->prepare($dql);
+        $stm->execute($param);
+        return $stm->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function selectTitoli(array $param=[]) : array{
         $pdo = DB::connect();
         $dql = "SELECT id_libro,titolo FROM Libri";
