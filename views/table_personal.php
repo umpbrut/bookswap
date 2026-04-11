@@ -19,6 +19,12 @@ if (!empty($table)) {
 
         $id = $record['id_annuncio']; 
         
+        echo "<td>
+                <a href='index.php?page=annunci&action=destroy&id_annuncio=$id' 
+                onclick='return confirm(\"Sei sicuro di voler eliminare questo annuncio?\");'>
+                🗑️ Elimina
+                </a>
+            </td>";
         echo "</tr>";
     }
     echo "</tbody></table></div>";

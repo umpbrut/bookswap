@@ -43,4 +43,14 @@ class AnnunciController{
         header('location:index.php');
         exit;
     }
+
+    public function destroy(){
+        $id=$_GET['id_annuncio'];
+
+        $param=[$id];
+        $this->model->deleteRecord($param);
+
+        header("location:index.php?page=annunci&action=personal");
+        exit;
+    }
 }
