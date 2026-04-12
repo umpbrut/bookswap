@@ -1,6 +1,5 @@
 <?php
 defined('APP') or die('Accesso Negato');
-
 require_once 'models/LoginModel.php';
 
 class LoginController {
@@ -53,13 +52,30 @@ class LoginController {
         $email = trim($_POST['email']);
         $password = trim($_POST['password']);
         $num_tel = trim($_POST['num_tel']);
-
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        } else {
-            $param = [$nome, $cognome, $email, password_hash($password, PASSWORD_DEFAULT), $num_tel];
-            $this->model->insertRecord($param);
+            $_SESSION['error'] = "Formato email non valido ❌";
+            header("Location: index.php?page=login&action=registration");
+            exit;
         }
-        header("Location: index.php?page=login");
+
+        $utenteEsistente = $this->model->selectEmailPassword($email);
+
+        if ($utenteEsistente) {
+            $_SESSION['info'] = "L'email associata ha già un account. Accedi qui sotto. ℹ️";
+            header("Location: index.php?page=login&registration_status=exists");
+            exit;
+        }
+
+        $param = [$nome, $cognome, $email, password_hash($password, PASSWORD_DEFAULT), $num_tel];
+        $success = $this->model->insertRecord($param);
+        
+        if ($success) {
+            $_SESSION['success'] = "Registrazione avvenuta con successo! ✅";
+            header("Location: index.php?page=login&registration_status=success");
+        } else {
+            $_SESSION['error'] = "Errore durante la registrazione. Riprova. ❌";
+            header("Location: index.php?page=login&action=registration");
+        }
         exit;
     }
 }

@@ -1,6 +1,5 @@
 <?php
 defined('APP') or die('Accesso Negato');
-
 $quotes = [
     ['text' => 'Non ci sono scorciatoie per i posti dove vale la pena andare.', 'author' => 'Beverly Sills'],
     ['text' => 'Un libro deve essere un\'ascia per il mare ghiacciato che è dentro di noi.', 'author' => 'Franz Kafka'],
@@ -126,7 +125,6 @@ $randomQuote = $quotes[array_rand($quotes)];
                         <h2 class="fw-bold">BookSwap</h2>
                         <p class="text-muted small">Bentornato nel tuo rifugio letterario</p>
                     </header>
-
                     <main>
                         <?php if(!empty($_SESSION['error'])): ?>
                             <div class="alert alert-danger border-0 small text-center mb-3">
@@ -134,23 +132,45 @@ $randomQuote = $quotes[array_rand($quotes)];
                             </div>
                         <?php endif; ?>
 
+                        <?php if(!empty($_SESSION['success'])): ?>
+                            <div class="alert alert-success border-0 small text-center mb-3">
+                                <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if(!empty($_SESSION['info'])): ?>
+                            <div class="alert alert-info border-0 small text-center mb-3">
+                                <?= $_SESSION['info']; unset($_SESSION['info']); ?>
+                            </div>
+                        <?php endif; ?>
+
                         <section class="mb-4">
-                            <?php if(!empty($view)) include $view; ?>
+                            <?php 
+                            if (isset($_GET['registration_status'])): ?>
+                                <div class="d-grid">
+                                    <a href="index.php?page=login&action=login" class="btn btn-primary">Torna al Login</a>
+                                </div>
+                            <?php else: ?>
+                                <?php if(!empty($view)) include $view; ?>
+                            <?php endif; ?>
                         </section>
 
+                        <?php if(isset($_SESSION['id_utente'])): ?>
+                            <div class="d-grid mt-3">
+                                <a href="index.php?page=login&action=logout" class="btn btn-danger">LOGOUT</a>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="d-grid gap-2 border-top pt-3 text-center">
-                           <?php if(($page ?? '') == 'login' && (!isset($_GET['action']) || ($_GET['action'] ?? '') == 'login')): ?>
+                        <?php if(!isset($_GET['registration_status']) && ($page ?? '') == 'login' && (!isset($_GET['action']) || ($_GET['action'] ?? '') == 'login')): ?>
                                 <a href="index.php?page=login&action=registration" class="text-decoration-none small text-secondary">
                                     Non hai un account? <span style="color: var(--library-accent)" class="fw-bold">Registrati ora</span>
                                 </a>
-                            <?php else: ?>
-                                <a href="index.php?page=login&action=login" class="btn btn-outline-secondary btn-sm">Torna al Login</a>
                             <?php endif; ?>
                         </div>
                     </main>
                 </div>
             </div>
-
             <div class="col-lg-4 d-none d-lg-flex quote-section">
                 <div class="quote-content">
                     <p class="quote-text">"<?= htmlspecialchars($randomQuote['text']); ?>"</p>
@@ -160,6 +180,5 @@ $randomQuote = $quotes[array_rand($quotes)];
 
         </div>
     </div>
-
 </body>
 </html>

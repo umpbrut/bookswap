@@ -1,6 +1,5 @@
 <?php
 defined('APP') or die('Accesso Negato');
-
 require_once 'config/dbconnect.php';
 
 class LoginModel{

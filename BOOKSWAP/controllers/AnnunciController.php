@@ -1,6 +1,5 @@
 <?php
 defined('APP') or die('Accesso Negato');
-
 require_once 'models/AnnunciModel.php';
 
 class AnnunciController {
