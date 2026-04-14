@@ -46,11 +46,12 @@
 
     <label>Stato Annuncio:</label>
     <select name="stato">
-        <option value="disponibile">Disponibile</option>
-        <option value="non disponibile">Non Disponibile</option>
+        <option value="Disponibile">Disponibile</option>
+        <option value="Non disponibile">Non Disponibile</option>
     </select>
 
     <br><br>
+    <input type="hidden" name="id_annuncio" value="<?php echo $_GET['id_annuncio']?>">
 
     <button type="submit">Salva Modifiche</button>
 </form>

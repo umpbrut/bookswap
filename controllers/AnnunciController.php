@@ -70,9 +70,9 @@ class AnnunciController{
         $condizioni = trim($_POST['condizioni']);
         $id_libro = trim($_POST['id_libro']);
         $stato = trim($_POST['stato']);
-        // $id_annuncio = $_GET['id_annuncio'];
+        $id_annuncio = $_POST['id_annuncio'];
 
-        $param=[$prezzo, $ora, $luogo, $condizioni, $id_libro, $stato];
+        $param=[$prezzo, $ora, $luogo, $condizioni, $id_libro, $stato, $id_annuncio];
         $this->model->updateRecord($param);
 
         header('location:index.php');
