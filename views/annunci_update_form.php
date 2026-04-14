@@ -19,35 +19,35 @@
 
     <br><br>
 
-    <label>Prezzo (€):</label>
-    <input type="number" step="0.01" name="prezzo" value="<?php echo $annuncio['prezzo']; ?>" required>
+    <label for="prezzo">Prezzo (€):</label>
+    <input type="number" step="0.01" name="prezzo" id="prezzo" required>
 
     <br><br>
 
-    <label>Ora:</label>
-    <input type="time" name="ora" value="<?php echo $annuncio['ora']; ?>" required>
+    <label for="ora">Ora:</label>
+    <input type="time" name="ora" id="ora" value="<?php echo date('H:i'); ?>" required>
 
     <br><br>
 
-    <label>Luogo:</label>
-    <input type="text" name="luogo" value="<?php echo $annuncio['luogo']; ?>" required>
+    <label for="luogo">Luogo:</label>
+    <input type="text" name="luogo" id="luogo" placeholder="Es. Biblioteca" required>
 
     <br><br>
 
-    <label>Condizioni:</label>
-    <select name="condizioni">
-        <option value="Nuovo" <?php if($annuncio['condizioni'] == "Nuovo") echo "selected"; ?>>Nuovo</option>
-        <option value="Ottime" <?php if($annuncio['condizioni'] == "Ottime") echo "selected"; ?>>Ottime</option>
-        <option value="Buone" <?php if($annuncio['condizioni'] == "Buone") echo "selected"; ?>>Buone</option>
-        <option value="Usato" <?php if($annuncio['condizioni'] == "Usato") echo "selected"; ?>>Usato</option>
+    <label for="condizioni">Condizioni del libro:</label>
+    <select name="condizioni" id="condizioni">
+        <option value="Nuovo">Nuovo</option>
+        <option value="Ottime">Ottime</option>
+        <option value="Buone">Buone</option>
+        <option value="Usato">Usato/Rovinato</option>
     </select>
 
     <br><br>
 
     <label>Stato Annuncio:</label>
     <select name="stato">
-        <option value="disponibile" <?php if($annuncio['stato'] == "disponibile") echo "selected"; ?>>Disponibile</option>
-        <option value="non disponibile" <?php if($annuncio['stato'] == "non disponibile") echo "selected"; ?>>Non Disponibile</option>
+        <option value="disponibile">Disponibile</option>
+        <option value="non disponibile">Non Disponibile</option>
     </select>
 
     <br><br>
