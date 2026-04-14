@@ -65,7 +65,7 @@ class AnnunciModel{
     public function updateRecord(array $param) : bool{
         $pdo = DB::connect();
         $dml="UPDATE Annunci
-        SET prezzo = ?, ora = ?, luogo = ?, id_libro = ?, condizioni = ?, stato = ?
+        SET prezzo = ?, ora = ?, luogo = ?, condizioni = ?, id_libro = ?, stato = ?
         WHERE id_annuncio = ?";
 
         $stm = $pdo->prepare($dml);
