@@ -1,4 +1,4 @@
-<form action="index.php?page=annunci&action=update" method="post">
+<form action="index.php?page=annunci&action=edit" method="post">
     
     <input type="hidden" name="id_annuncio" value="<?php echo $annuncio['id_annuncio']; ?>">
 
