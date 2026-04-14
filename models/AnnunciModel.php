@@ -23,6 +23,15 @@ class AnnunciModel{
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function selectAnnuncio(array $param=[]) : array{
+        $pdo = DB::connect();
+        $dql = "SELECT * FROM Annunci WHERE id_annuncio = ?";
+
+        $stm = $pdo->prepare($dql);
+        $stm->execute($param);
+        return $stm->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function selectTitoli(array $param=[]) : array{
         $pdo = DB::connect();
         $dql = "SELECT id_libro,titolo FROM Libri";
@@ -46,6 +55,18 @@ class AnnunciModel{
     public function deleteRecord(array $param) : bool{
         $pdo = DB::connect();
         $dml="DELETE FROM Annunci WHERE id_annuncio = ?";
+
+        $stm = $pdo->prepare($dml);
+        $stm->execute($param);
+
+        return $stm->rowCount() !== 0;
+    }
+
+    public function updateRecord(array $param) : bool{
+        $pdo = DB::connect();
+        $dml="UPDATE Annunci
+        SET prezzo = ?, ora = ?, luogo = ?, id_libro = ?, condizioni = ?, stato = ?
+        WHERE id_annuncio = ?";
 
         $stm = $pdo->prepare($dml);
         $stm->execute($param);
