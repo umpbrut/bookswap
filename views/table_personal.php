@@ -25,6 +25,11 @@ if (!empty($table)) {
                 🗑️ Elimina
                 </a>
             </td>";
+        echo "<td>
+                <a href='index.php?page=annunci&action=update&id_annuncio=$id'>
+                ✏️ Modifica
+                </a>
+            </td>";
         echo "</tr>";
     }
     echo "</tbody></table></div>";

@@ -53,4 +53,25 @@ class AnnunciController{
         header("location:index.php?page=annunci&action=personal");
         exit;
     }
+
+    public function update(){
+        $table=$this->model->selectAnnuncio();
+        $view='views/annunci_update_form.php';
+        include 'views/template.php';
+    }
+
+    public function edit(){
+        $prezzo = trim($_POST['prezzo']);
+        $ora = trim($_POST['ora']);
+        $luogo = trim($_POST['luogo']);
+        $condizioni = trim($_POST['condizioni']);
+        $id_libro = trim($_POST['id_libro']);
+        $stato = trim($_POST['stato']);
+
+        $param=[$prezzo, $ora, $luogo, $condizioni, $id_libro, $stato];
+        $this->model->updateRecord($param);
+
+        header('location:index.php');
+        exit;
+    }
 }
