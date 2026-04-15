@@ -1,13 +1,34 @@
 <form action="index.php?page=annunci&action=store" method="post">
 
-<div class="search-container" style="position: relative;">
-  <label for="ricerca-libri">Cerca un libro:</label>
-  <input type="text" id="ricerca-libri" oninput="get_libri_api()" placeholder="Inizia a scrivere il titolo..." autocomplete="off">
+<div class="search-container" style="position: relative; width: 300px;">
+  
+  <input type="text" id="search" oninput="get_libri()" placeholder="Inizia a scrivere..." autocomplete="off" 
+    style="width: 100%; padding: 8px; box-sizing: border-box;">
 
-  <input type="hidden" name="id_libro" id="id_libro_hidden">
+  <ul id="lista_libri">
 
-  <div id="risultati-ricerca" class="dropdown-custom">
-</div>
+  </ul>
+    <script>
+        function get_libri(){
+            let cerca = search.value;
+            let testo ="";
+            if(cerca!=""){
+                testo=`&testo=${cerca}`;
+            }
+            fetch("http://lab.isit100.fe.it:8092/govoni/bookswap/libri.php?get_libri"+testo)
+            .then(res=> res.json())
+            .then(data=>{
+                lista_libri.innerHTML="";
+                for(let riga of data){
+                    lista_libri.innerHTML += `
+                    <li onclick="search.value='${riga.titolo}'">${riga.titolo}</li>
+                    `;
+                }
+            })
+        }
+        get_libri();
+    </script>
+  
 </div>
 
 <br>
