@@ -18,8 +18,16 @@ class LoginController {
     }
 
     public function check() {
-        $email = $_POST['email'] ?? '';
+        $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
+
+        // MODIFICA: Validazione email durante il login
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error'] = "Formato email non valido. Riprova. ❌";
+            header('Location: index.php?page=login'); // Rimane qui e svuota (grazie al redirect)
+            exit;
+        }
+
         $dati = $this->model->selectEmailPassword($email);
         
         if($dati && password_verify($password, $dati['password'])) {
@@ -29,6 +37,7 @@ class LoginController {
             header('Location: index.php?page=annunci&action=index'); 
             exit;
         } else {
+            $_SESSION['error'] = "Credenziali errate. Riprova. ❌";
             header('Location: index.php?page=login');
             exit;
         }
@@ -52,6 +61,7 @@ class LoginController {
         $email = trim($_POST['email']);
         $password = trim($_POST['password']);
         $num_tel = trim($_POST['num_tel']);
+
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['error'] = "Formato email non valido ❌";
             header("Location: index.php?page=login&action=registration");

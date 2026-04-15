@@ -162,10 +162,16 @@ $randomQuote = $quotes[array_rand($quotes)];
                         <?php endif; ?>
 
                         <div class="d-grid gap-2 border-top pt-3 text-center">
-                        <?php if(!isset($_GET['registration_status']) && ($page ?? '') == 'login' && (!isset($_GET['action']) || ($_GET['action'] ?? '') == 'login')): ?>
-                                <a href="index.php?page=login&action=registration" class="text-decoration-none small text-secondary">
-                                    Non hai un account? <span style="color: var(--library-accent)" class="fw-bold">Registrati ora</span>
-                                </a>
+                            <?php if(!isset($_GET['registration_status'])): ?>
+                                <?php if(isset($_GET['action']) && $_GET['action'] == 'registration'): ?>
+                                    <a href="index.php?page=login&action=login" class="text-decoration-none small text-secondary">
+                                        Hai già un account? <span style="color: var(--library-accent)" class="fw-bold">Accedi qui</span>
+                                    </a>
+                                <?php elseif(!isset($_GET['action']) || $_GET['action'] == 'login'): ?>
+                                    <a href="index.php?page=login&action=registration" class="text-decoration-none small text-secondary">
+                                        Non hai un account? <span style="color: var(--library-accent)" class="fw-bold">Registrati ora</span>
+                                    </a>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </main>
