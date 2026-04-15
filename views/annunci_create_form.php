@@ -1,19 +1,14 @@
 <form action="index.php?page=annunci&action=store" method="post">
 
-<label for="ricerca-libri">Cerca un libro:</label>
-<input type="text" id="ricerca-libri" list="lista-titoli" placeholder="Inizia a scrivere il titolo..." autocomplete="off">
+<div class="search-container" style="position: relative;">
+  <label for="ricerca-libri">Cerca un libro:</label>
+  <input type="text" id="ricerca-libri" oninput="get_libri_api()" placeholder="Inizia a scrivere il titolo..." autocomplete="off">
 
-<input type="hidden" name="id_libro" id="id_libro_hidden">
+  <input type="hidden" name="id_libro" id="id_libro_hidden">
 
-<datalist id="lista-titoli">
-  <?php
-    foreach($libri as $libro){
-        $id=$libro['id_libro'];
-        $titolo=$libro['titolo'];
-        echo "<option data-id='$id' value='$titolo'>";
-    }
-  ?>
-</datalist>
+  <div id="risultati-ricerca" class="dropdown-custom">
+</div>
+</div>
 
 <br>
 

@@ -1,63 +1,91 @@
 <?php
 defined('APP') or die('Accesso Negato');
-
 require_once 'models/LoginModel.php';
 
-class LoginController{
+class LoginController {
     private $model;
     private $page;
 
-    public function __construct(){
+    public function __construct() {
         $this->model = new LoginModel();
-        $this->page='login';
+        $this->page = 'login';
     }
 
-    public function login(){
-        $view='views/login_form.php'; 
+    public function login() {
+        $page = $this->page; 
+        $view = 'views/login_form.php'; 
         include 'views/login_template.php';
     }
 
-    public function check(){
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $param=['email'];
+    public function check() {
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
 
-        $emails = $this->model->selectEmail();
-        if(in_array($email,$emails)){
-            $dati=$this->model->selectEmailPassword($email);
-                if(password_verify($password, $dati['password'])){
-                // if($password == $dati['password']){ //solo perchè non ho messo la password hashata
-                    $_SESSION['email']=$email;
-                    $_SESSION['nome']=$dati['nome'];
-                    $_SESSION['id_utente']=$dati['id_utente'];
-                }
+        // MODIFICA: Validazione email durante il login
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error'] = "Formato email non valido. Riprova. ❌";
+            header('Location: index.php?page=login'); // Rimane qui e svuota (grazie al redirect)
+            exit;
         }
-        header('location:index.php');
+
+        $dati = $this->model->selectEmailPassword($email);
+        
+        if($dati && password_verify($password, $dati['password'])) {
+            $_SESSION['id_utente'] = $dati['id_utente'];
+            $_SESSION['nome'] = $dati['nome'];
+            
+            header('Location: index.php?page=annunci&action=index'); 
+            exit;
+        } else {
+            $_SESSION['error'] = "Credenziali errate. Riprova. ❌";
+            header('Location: index.php?page=login');
+            exit;
+        }
+    }
+
+    public function logout() {
+        session_destroy();
+        header("Location: index.php?page=login");
         exit;
     }
 
-    public function registration(){
-        $view='views/login_registration_form.php'; 
+    public function registration() {
+        $page = $this->page;
+        $view = 'views/login_registration_form.php'; 
         include 'views/login_template.php';
     }
 
-    public function store(){
+    public function store() {
         $nome = trim($_POST['nome']);
         $cognome = trim($_POST['cognome']);
-        $email =trim($_POST['email']);
-        $password=trim($_POST['password']);
-        $num_tel=trim($_POST['num_tel']);
+        $email = trim($_POST['email']);
+        $password = trim($_POST['password']);
+        $num_tel = trim($_POST['num_tel']);
 
-        if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-            $_SESSION['error'] = "Formato email non valido";
-        }
-        else{
-            $param=[$nome,$cognome,$email,password_hash($password,PASSWORD_DEFAULT),$num_tel];
-            $this->model->insertRecord($param);
-            $_SESSION['error'] = "Registrazione avvenuta ✅";
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error'] = "Formato email non valido ❌";
+            header("Location: index.php?page=login&action=registration");
+            exit;
         }
 
-        header("location:index.php");
+        $utenteEsistente = $this->model->selectEmailPassword($email);
+
+        if ($utenteEsistente) {
+            $_SESSION['info'] = "L'email associata ha già un account. Accedi qui sotto. ℹ️";
+            header("Location: index.php?page=login&registration_status=exists");
+            exit;
+        }
+
+        $param = [$nome, $cognome, $email, password_hash($password, PASSWORD_DEFAULT), $num_tel];
+        $success = $this->model->insertRecord($param);
+        
+        if ($success) {
+            $_SESSION['success'] = "Registrazione avvenuta con successo! ✅";
+            header("Location: index.php?page=login&registration_status=success");
+        } else {
+            $_SESSION['error'] = "Errore durante la registrazione. Riprova. ❌";
+            header("Location: index.php?page=login&action=registration");
+        }
         exit;
     }
 }

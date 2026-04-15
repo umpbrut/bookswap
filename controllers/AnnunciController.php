@@ -23,7 +23,6 @@ class AnnunciController{
     }
 
     public function create(){
-        $libri=$this->model->selectTitoli();
         $view='views/annunci_create_form.php';
         include 'views/template.php';
     }
