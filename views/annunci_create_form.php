@@ -2,32 +2,30 @@
 
 <div class="search-container" style="position: relative; width: 300px;">
   
-  <input type="text" id="search" oninput="get_libri()" placeholder="Inizia a scrivere..." autocomplete="off" 
+  <input type="text" id="search" list="lista_libri" oninput="get_libri()" placeholder="Inizia a scrivere..." autocomplete="off" 
     style="width: 100%; padding: 8px; box-sizing: border-box;">
 
-  <ul id="lista_libri">
+<datalist id="lista_libri"></datalist>
 
-  </ul>
-    <script>
-        function get_libri(){
-            let cerca = search.value;
-            let testo ="";
-            if(cerca!=""){
-                testo=`&testo=${cerca}`;
-            }
-            fetch("http://lab.isit100.fe.it:8092/govoni/bookswap/libri.php?get_libri"+testo)
-            .then(res=> res.json())
-            .then(data=>{
-                lista_libri.innerHTML="";
-                for(let riga of data){
-                    lista_libri.innerHTML += `
-                    <li onclick="search.value='${riga.titolo}'">${riga.titolo}</li>
-                    `;
-                }
-            })
+<script>
+    function get_libri(){
+        let cerca = search.value;
+        let testo ="";
+        if(cerca != ""){
+            testo = `&testo=${cerca}`;
         }
-        get_libri();
-    </script>
+        
+        fetch("libri.php?get_libri" + testo)
+        .then(res => res.json())
+        .then(data => {
+            lista_libri.innerHTML = "";
+            
+            for(let riga of data){
+                lista_libri.innerHTML += `<option value="${riga.titolo}"></option>`;
+            }
+        })
+    }
+</script>
   
 </div>
 
