@@ -25,6 +25,7 @@
             }
         })
     }
+    //carica solamente i libri quando si inizia a scrivere perchè senno li caricherebbe ogni volta
 </script>
   
 </div>
