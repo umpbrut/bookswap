@@ -1,5 +1,7 @@
 <form action="index.php?page=annunci&action=store" method="post">
 
+<input type="hidden" name="id_libro" id="id_libro_hidden">
+
 <div class="search-container" style="position: relative; width: 300px;">
   
   <input type="text" id="search" list="lista_libri" oninput="get_libri()" placeholder="Inizia a scrivere..." autocomplete="off" 
@@ -8,23 +10,43 @@
 <datalist id="lista_libri"></datalist>
 
 <script>
-    function get_libri(){
-        let cerca = search.value;
-        let testo ="";
-        if(cerca != ""){
-            testo = `&testo=${cerca}`;
-        }
-        
-        fetch("libri.php?get_libri" + testo)
-        .then(res => res.json())
-        .then(data => {
-            lista_libri.innerHTML = "";
-            
-            for(let riga of data){
-                lista_libri.innerHTML += `<option value="${riga.titolo}"></option>`;
-            }
-        })
+    function get_libri() {
+    let cerca = document.getElementById('search').value;
+    let lista = document.getElementById('lista_libri');
+    let hiddenInput = document.getElementById('id_libro_hidden'); // <--- NUOVO
+    
+    if (cerca == "") {
+        hiddenInput.value = "";
+        return;
     }
+
+    fetch("libri.php?get_libri&testo=" + cerca)
+    .then(res => res.json())
+    .then(data => {
+        lista.innerHTML = ""; // Svuota la lista precedente
+        
+        data.forEach(riga => {
+            // Creiamo l'elemento option programmando l'ID al suo interno
+            let option = document.createElement('option');
+            option.value = riga.titolo; 
+            option.setAttribute('data-id', riga.id_libro); // <--- NUOVO: salva l'ID qui
+            lista.appendChild(option);
+        });
+
+        // CONTROLLO SELEZIONE:
+        // Ciclo le opzioni appena create: se il testo nell'input è uguale a una 
+        // delle opzioni, allora l'utente ha "selezionato" quel libro.
+        let opzioneTrovata = Array.from(lista.options).find(opt => opt.value === cerca);
+        
+        if (opzioneTrovata) {
+            // Se lo trova, imposta l'ID nel campo hidden che verrà inviato al PHP
+            hiddenInput.value = opzioneTrovata.getAttribute('data-id');
+        } else {
+            // Se l'utente sta ancora scrivendo o cancella, svuota l'ID
+            hiddenInput.value = "";
+        }
+    });
+}
     //carica solamente i libri quando si inizia a scrivere perchè senno li caricherebbe ogni volta
 </script>
   
