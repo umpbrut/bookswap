@@ -25,7 +25,9 @@ class AnnunciModel{
 
     public function selectAnnuncio(array $param=[]) : array{
         $pdo = DB::connect();
-        $dql = "SELECT * FROM Annunci WHERE id_annuncio = ?";
+        $dql = "SELECT * FROM Annunci
+                JOIN Libri using(id_libro)
+                WHERE id_annuncio = ? and id_libro = ?";
 
         $stm = $pdo->prepare($dql);
         $stm->execute($param);

@@ -93,7 +93,7 @@
 
 <?php 
 // Assicurati che $table[0] contenga i dati dell'annuncio da modificare
-$annuncio = $table[0]; 
+$annuncio = $table[0];
 ?>
 
 <form action="index.php?page=annunci&action=edit" method="post">
@@ -106,7 +106,8 @@ $annuncio = $table[0];
         <label>Libro:</label>
         <input type="text" id="search" list="lista_libri" oninput="get_libri()" 
                placeholder="Cerca un libro..." autocomplete="off" 
-               style="width: 100%; padding: 8px; box-sizing: border-box;">
+               style="width: 100%; padding: 8px; box-sizing: border-box;"
+               value="<?php echo isset($annuncio['titolo']) ? $annuncio['titolo'] : ''; ?>">
         
         <datalist id="lista_libri"></datalist>
 

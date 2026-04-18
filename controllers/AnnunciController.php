@@ -56,7 +56,8 @@ class AnnunciController{
     public function update(){
         $libri=$this->model->selectTitoli();
         $id_annuncio = $_GET['id_annuncio'];
-        $param=[$id_annuncio];
+        $id_libro=$_GET['id_libro'];
+        $param=[$id_annuncio,$id_libro];
         $table=$this->model->selectAnnuncio($param);
         $view='views/annunci_update_form.php';
         include 'views/template.php';
