@@ -4,23 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        ul{
-            display: none; 
-            position: absolute; 
-            top: 100%; 
-            left: 0; 
-            right: 0; 
-            z-index: 1000; 
-            background: white; 
-            border: 1px solid #ccc; 
-            list-style: none; 
-            margin: 0; 
-            padding: 0; 
-            max-height: 200px; 
-            overflow-y: auto;
-        }
-    </style>
     <title>ISIT BOOKS</title>
 </head>
 <body>
