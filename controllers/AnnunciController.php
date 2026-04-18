@@ -11,18 +11,26 @@ class AnnunciController{
         $this->model = new AnnunciModel();
         $this->page='annunci';
     }
-
+    
+    private function proteggiPagina() {
+        if (!isset($_SESSION['id_utente'])) {
+            header('location: index.php?page=login&action=login');
+            exit;
+        }
+    }
     public function index(){
         $table = $this->model->selectAll();
         include 'views/template.php';
     }
 
     public function personal(){
+        $this->proteggiPagina();
         $table = $this->model->selectAnnunciByUtente();
         include 'views/template.php';
     }
 
     public function create(){
+        $this->proteggiPagina();
         $view='views/annunci_create_form.php';
         include 'views/template.php';
     }
