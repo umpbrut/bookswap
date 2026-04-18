@@ -23,7 +23,6 @@ class AnnunciController{
     }
 
     public function create(){
-        $libri=$this->model->selectTitoli();
         $view='views/annunci_create_form.php';
         include 'views/template.php';
     }
@@ -57,7 +56,8 @@ class AnnunciController{
     public function update(){
         $libri=$this->model->selectTitoli();
         $id_annuncio = $_GET['id_annuncio'];
-        $param=[$id_annuncio];
+        $id_libro=$_GET['id_libro'];
+        $param=[$id_annuncio,$id_libro];
         $table=$this->model->selectAnnuncio($param);
         $view='views/annunci_update_form.php';
         include 'views/template.php';
@@ -70,7 +70,7 @@ class AnnunciController{
         $condizioni = trim($_POST['condizioni']);
         $id_libro = trim($_POST['id_libro']);
         $stato = trim($_POST['stato']);
-        $id_annuncio = $_POST['id_annuncio'];
+        $id_annuncio = trim($_POST['id_annuncio']);
 
         $param=[$prezzo, $ora, $luogo, $condizioni, $id_libro, $stato, $id_annuncio];
         $this->model->updateRecord($param);

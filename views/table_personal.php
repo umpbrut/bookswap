@@ -18,6 +18,7 @@ if (!empty($table)) {
         }
 
         $id = $record['id_annuncio']; 
+        $libro = $record['id_libro'];
         
         echo "<td>
                 <a href='index.php?page=annunci&action=destroy&id_annuncio=$id' 
@@ -26,7 +27,7 @@ if (!empty($table)) {
                 </a>
             </td>";
         echo "<td>
-                <a href='index.php?page=annunci&action=update&id_annuncio=$id'>
+                <a href='index.php?page=annunci&action=update&id_annuncio=$id&id_libro=$libro'>
                 ✏️ Modifica
                 </a>
             </td>";
