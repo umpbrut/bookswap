@@ -1,16 +1,57 @@
 <form action="index.php?page=annunci&action=store" method="post">
-<label for="ricerca-libri">Cerca un libro:</label>
-<input type="text" id="ricerca-libri" list="lista-titoli" placeholder="Inizia a scrivere il titolo..." autocomplete="off">
+
 <input type="hidden" name="id_libro" id="id_libro_hidden">
-<datalist id="lista-titoli">
-  <?php
-    foreach($libri as $libro){
-        $id=$libro['id_libro'];
-        $titolo=$libro['titolo'];
-        echo "<option data-id='$id' value='$titolo'>";
+
+<div class="search-container" style="position: relative; width: 300px;">
+  
+  <input type="text" id="search" list="lista_libri" oninput="get_libri()" placeholder="Inizia a scrivere..." autocomplete="off" 
+    style="width: 100%; padding: 8px; box-sizing: border-box;">
+
+<datalist id="lista_libri"></datalist>
+
+<script>
+    function get_libri() {
+    let cerca = document.getElementById('search').value;
+    let lista = document.getElementById('lista_libri');
+    let hiddenInput = document.getElementById('id_libro_hidden'); // <--- NUOVO
+    
+    if (cerca == "") {
+        hiddenInput.value = "";
+        return;
     }
-  ?>
-</datalist>
+
+    fetch("libri.php?get_libri&testo=" + cerca)
+    .then(res => res.json())
+    .then(data => {
+        lista.innerHTML = ""; // Svuota la lista precedente
+        
+        data.forEach(riga => {
+            // Creiamo l'elemento option programmando l'ID al suo interno
+            let option = document.createElement('option');
+            option.value = riga.titolo; 
+            option.setAttribute('data-id', riga.id_libro); // <--- NUOVO: salva l'ID qui
+            lista.appendChild(option);
+        });
+
+        // CONTROLLO SELEZIONE:
+        // Ciclo le opzioni appena create: se il testo nell'input è uguale a una 
+        // delle opzioni, allora l'utente ha "selezionato" quel libro.
+        let opzioneTrovata = Array.from(lista.options).find(opt => opt.value === cerca);
+        
+        if (opzioneTrovata) {
+            // Se lo trova, imposta l'ID nel campo hidden che verrà inviato al PHP
+            hiddenInput.value = opzioneTrovata.getAttribute('data-id');
+        } else {
+            // Se l'utente sta ancora scrivendo o cancella, svuota l'ID
+            hiddenInput.value = "";
+        }
+    });
+}
+    //carica solamente i libri quando si inizia a scrivere perchè senno li caricherebbe ogni volta
+</script>
+  
+</div>
+
 <br>
 <label for="prezzo">Prezzo (€):</label>
     <input type="number" step="0.01" name="prezzo" id="prezzo" required>

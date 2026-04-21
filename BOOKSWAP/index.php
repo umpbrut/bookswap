@@ -1,20 +1,28 @@
 <?php
 session_start();
-define('APP',true);
-if(isset($_SESSION['id_utente'])){
-    $page=$_GET['page'] ?? 'annunci';
-    $action=$_GET['action'] ?? 'index';
-    $filename=ucfirst($page).'Controller';
-}
-else{
-    $page='login';
-    $action=$_GET['action'] ?? 'login';
-    $filename=ucfirst($page).'Controller';
+define('APP', true);
+
+$page = $_GET['page'] ?? 'annunci';
+$action = $_GET['action'] ?? 'index';
+
+$pagine_pubbliche = ['login', 'registrazione', 'annunci'];
+
+if (!in_array($page, $pagine_pubbliche) && !isset($_SESSION['id_utente'])) {
+    $page = 'login';
+    $action = 'login';
 }
 
+$filename = ucfirst($page) . 'Controller';
+
+if (file_exists("controllers/$filename.php")) {
     require_once "controllers/$filename.php";
     $controller = new $filename();
 
-    if(method_exists($controller,$action)){
+    if (method_exists($controller, $action)) {
         $controller->$action();
+    } else {
+        echo "Azione non trovata.";
     }
+} else {
+    echo "Pagina non trovata.";
+}
