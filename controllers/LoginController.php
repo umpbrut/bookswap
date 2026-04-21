@@ -37,7 +37,7 @@ class LoginController {
             exit;
         } else {
             $_SESSION['error'] = "Credenziali errate. Riprova. ❌";
-            header('Location: index.php?page=login');
+            header('Location: index.php?page=login&action=login');
             exit;
         }
     }
@@ -63,6 +63,16 @@ class LoginController {
 
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['error'] = "Formato email non valido ❌";
+            header("Location: index.php?page=login&action=registration");
+            exit;
+        }
+
+        // Estraiamo il dominio dall'email (tutto ciò che sta dopo la @)
+        $dominio = substr(strrchr($email, "@"), 1);
+
+        // Controlliamo se il dominio ha dei record MX (Mail Exchanger)
+        if (!checkdnsrr($dominio, "MX")) {
+            $_SESSION['error'] = "Email inesistente ❌";
             header("Location: index.php?page=login&action=registration");
             exit;
         }
