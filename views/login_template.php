@@ -134,7 +134,7 @@ $randomQuote = $quotes[array_rand($quotes)];
 
                         <?php if(!empty($_SESSION['success'])): ?>
                             <div class="alert alert-success border-0 small text-center mb-3">
-                                <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+                            <?= $_SESSION['success']; unset($_SESSION['success']); ?>
                             </div>
                         <?php endif; ?>
 
@@ -144,15 +144,7 @@ $randomQuote = $quotes[array_rand($quotes)];
                             </div>
                         <?php endif; ?>
 
-                        <section class="mb-4">
-                            <?php 
-                            if (isset($_GET['registration_status'])): ?>
-                                <div class="d-grid">
-                                    <a href="index.php?page=login&action=login" class="btn btn-primary">Torna al Login</a>
-                                </div>
-                            <?php else: ?>
                                 <?php if(!empty($view)) include $view; ?>
-                            <?php endif; ?>
                         </section>
 
                         <?php if(isset($_SESSION['id_utente'])): ?>

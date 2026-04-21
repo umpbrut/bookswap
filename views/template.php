@@ -22,7 +22,7 @@
             </nav>
 
             <section>
-                <?php //include 'table.php';
+                <?php
                 $action = $_GET['action'] ?? 'index';
                     if ($action == 'personal'){
                         include 'table_personal.php';
