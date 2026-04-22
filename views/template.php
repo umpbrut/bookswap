@@ -98,7 +98,7 @@
     <header>
         <a href="index.php?page=annunci">Annunci</a>
         <a href="index.php?page=annunci&action=create" class="active">Nuovo</a>
-        <a href="index.php?page=mieiannunci">I miei annunci</a>
+        <a href="index.php?page=annunci&action=personal">I miei annunci</a>
     </header>
 
     
