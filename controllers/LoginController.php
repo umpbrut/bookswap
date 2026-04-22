@@ -18,13 +18,12 @@ class LoginController {
     }
 
     public function check() {
-        $email = trim($_POST['email'] ?? '');
+        $email = trim($_POST['email']) ?? '';
         $password = $_POST['password'] ?? '';
 
-        // MODIFICA: Validazione email durante il login
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['error'] = "Formato email non valido. Riprova. ❌";
-            header('Location: index.php?page=login'); // Rimane qui e svuota (grazie al redirect)
+            header('Location: index.php?page=login');
             exit;
         }
 
@@ -38,7 +37,7 @@ class LoginController {
             exit;
         } else {
             $_SESSION['error'] = "Credenziali errate. Riprova. ❌";
-            header('Location: index.php?page=login');
+            header('Location: index.php?page=login&action=login');
             exit;
         }
     }
@@ -68,11 +67,21 @@ class LoginController {
             exit;
         }
 
+        // Estraiamo il dominio dall'email (tutto ciò che sta dopo la @)
+        $dominio = substr(strrchr($email, "@"), 1);
+
+        // Controlliamo se il dominio ha dei record MX (Mail Exchanger)
+        if (!checkdnsrr($dominio, "MX")) {
+            $_SESSION['error'] = "Email inesistente ❌";
+            header("Location: index.php?page=login&action=registration");
+            exit;
+        }
+
         $utenteEsistente = $this->model->selectEmailPassword($email);
 
         if ($utenteEsistente) {
             $_SESSION['info'] = "L'email associata ha già un account. Accedi qui sotto. ℹ️";
-            header("Location: index.php?page=login&registration_status=exists");
+            header("Location: index.php?page=login&action=registration");
             exit;
         }
 
@@ -81,7 +90,7 @@ class LoginController {
         
         if ($success) {
             $_SESSION['success'] = "Registrazione avvenuta con successo! ✅";
-            header("Location: index.php?page=login&registration_status=success");
+            header("Location: index.php?page=login&action=login");
         } else {
             $_SESSION['error'] = "Errore durante la registrazione. Riprova. ❌";
             header("Location: index.php?page=login&action=registration");

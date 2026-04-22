@@ -4,7 +4,7 @@ defined('APP') or die('Accesso Negato');
 require_once 'config/dbconnect.php';
 
 class LoginModel{
-    public function selectEmailPassword($param) : array{
+    public function selectEmailPassword($param) : array|bool{
         $pdo = DB::connect();
         $dql = "SELECT `email`, `password`, `nome`, `id_utente` FROM Utenti
         WHERE email=?";

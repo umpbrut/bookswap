@@ -5,7 +5,7 @@ define('APP', true);
 $page = $_GET['page'] ?? 'annunci';
 $action = $_GET['action'] ?? 'index';
 
-$pagine_pubbliche = ['login', 'registrazione', 'annunci'];
+$pagine_pubbliche = ['login', 'annunci'];
 
 if (!in_array($page, $pagine_pubbliche) && !isset($_SESSION['id_utente'])) {
     $page = 'login';
