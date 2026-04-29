@@ -27,13 +27,28 @@ class PreferitiController{
 
     public function store(){
         $this->proteggiPagina();
-        $id_utente=$_SESSION['id_utente'];
-        $id_annuncio=$_GET['id_annuncio'];
+        
+        $id_utente = $_SESSION['id_utente'];
+        $id_annuncio = $_GET['id_annuncio'] ?? null;
 
-        $param=[$id_utente,$id_annuncio];
-        $this->model->insertRecord($param);
+        if (!$id_annuncio) {
+            header('location:index.php');
+            exit;
+        }
 
-        header('location:index.php');
-        exit;
+        $param = [$id_utente, $id_annuncio];
+
+        // LOGICA TOGGLE:
+        if ($this->model->exists($id_utente, $id_annuncio)) {
+            // Se esiste già, lo rimuoviamo
+            $this->model->deleteRecord($param);
+            header("location: index.php?page=preferiti");
+            exit;
+        } else {
+            // Se non esiste, lo inseriamo
+            $this->model->insertRecord($param);
+            header("location: index.php?page=annunci");
+            exit;
+        }
     }
 }
