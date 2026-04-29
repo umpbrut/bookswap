@@ -8,8 +8,8 @@ $action = $_GET['action'] ?? 'index';
 $pagine_pubbliche = ['login', 'annunci'];
 
 if (!in_array($page, $pagine_pubbliche) && !isset($_SESSION['id_utente'])) {
-    $page = 'login';
-    $action = 'login';
+    header('Location: index.php?page=login&action=login');
+    exit;
 }
 
 $filename = ucfirst($page) . 'Controller';

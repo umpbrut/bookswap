@@ -17,7 +17,13 @@ if (!empty($table)) {
             echo "<td>$field</td>";
         }
 
-        $id = $record['id_annuncio']; 
+        $id = $record['id_annuncio'];
+
+        echo "<td>
+                <a href='index.php?page=preferiti&action=store&id_annuncio=$id'>
+                Aggiungi ❤️
+                </a>
+            </td>";
         
         echo "</tr>";
     }

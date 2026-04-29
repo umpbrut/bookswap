@@ -99,6 +99,7 @@
         <a href="index.php?page=annunci">Annunci</a>
         <a href="index.php?page=annunci&action=create" class="active">Nuovo</a>
         <a href="index.php?page=annunci&action=personal">I miei annunci</a>
+        <a href="index.php?page=preferiti&action=index">Preferiti</a>
     </header>
 
     
