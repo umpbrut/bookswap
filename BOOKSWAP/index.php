@@ -2,14 +2,16 @@
 session_start();
 define('APP', true);
 
+// Recupero pagina e azione
 $page = $_GET['page'] ?? 'annunci';
 $action = $_GET['action'] ?? 'index';
 
-$pagine_pubbliche = ['login', 'registrazione', 'annunci'];
+// Pagine accessibili senza login
+$pagine_pubbliche = ['login', 'annunci'];
 
 if (!in_array($page, $pagine_pubbliche) && !isset($_SESSION['id_utente'])) {
-    $page = 'login';
-    $action = 'login';
+    header("Location: index.php?page=login&action=login");
+    exit;
 }
 
 $filename = ucfirst($page) . 'Controller';
@@ -21,8 +23,8 @@ if (file_exists("controllers/$filename.php")) {
     if (method_exists($controller, $action)) {
         $controller->$action();
     } else {
-        echo "Azione non trovata.";
+        echo "Azione '$action' non trovata.";
     }
 } else {
-    echo "Pagina non trovata.";
+    echo "Controller '$filename' non trovato.";
 }
