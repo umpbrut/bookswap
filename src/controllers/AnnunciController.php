@@ -36,7 +36,7 @@ class AnnunciController{
     }
 
     public function store(){
-        $prezzo = trim($_POST['prezzo']);
+        $prezzo_vendita = trim($_POST['prezzo_vendita']);
         $data = trim($_POST['data']);
         $ora = trim($_POST['ora']);
         $luogo = trim($_POST['luogo']);
@@ -44,7 +44,7 @@ class AnnunciController{
         $condizioni = trim($_POST['condizioni']);
         $id_libro = trim($_POST['id_libro']);
 
-        $param=[$prezzo, $data, $ora, $luogo, $id_creatore, $id_libro, $condizioni];
+        $param=[$prezzo_vendita, $data, $ora, $luogo, $id_creatore, $id_libro, $condizioni];
         $this->model->insertRecord($param);
 
         header('location:index.php');
@@ -72,7 +72,7 @@ class AnnunciController{
     }
 
     public function edit(){
-        $prezzo = trim($_POST['prezzo']);
+        $prezzo_vendita = trim($_POST['prezzo_vendita']);
         $ora = trim($_POST['ora']);
         $luogo = trim($_POST['luogo']);
         $condizioni = trim($_POST['condizioni']);
@@ -80,7 +80,7 @@ class AnnunciController{
         $stato = trim($_POST['stato']);
         $id_annuncio = trim($_POST['id_annuncio']);
 
-        $param=[$prezzo, $ora, $luogo, $condizioni, $id_libro, $stato, $id_annuncio];
+        $param=[$prezzo_vendita, $ora, $luogo, $condizioni, $id_libro, $stato, $id_annuncio];
         $this->model->updateRecord($param);
 
         header('location:index.php');

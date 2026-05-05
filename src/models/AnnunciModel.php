@@ -21,7 +21,9 @@ class AnnunciModel{
 
     public function selectAnnunciByUtente(array $param=[]) : array{
         $id=$_SESSION['id_utente'];
-        $dql = "SELECT * FROM Annunci WHERE id_creatore = $id";
+        $dql = "SELECT * FROM Annunci
+        JOIN Libri USING(id_libro)
+        WHERE id_creatore = $id";
 
         $stm = $this->pdo->prepare($dql);
         $stm->execute($param);
