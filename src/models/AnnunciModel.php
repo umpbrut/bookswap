@@ -49,7 +49,7 @@ class AnnunciModel{
     }
 
     public function insertRecord(array $param) : bool{
-        $dml="INSERT INTO Annunci(`prezzo`,`data`,`ora`,`luogo`,`id_creatore`,`id_libro`,`condizioni`)
+        $dml="INSERT INTO Annunci(`prezzo_vendita`,`data`,`ora`,`luogo`,`id_creatore`,`id_libro`,`condizioni`)
         VALUES(?,?,?,?,?,?,?)";
 
         $stm = $this->pdo->prepare($dml);
@@ -69,7 +69,7 @@ class AnnunciModel{
 
     public function updateRecord(array $param) : bool{
         $dml="UPDATE Annunci
-        SET prezzo = ?, ora = ?, luogo = ?, condizioni = ?, id_libro = ?, stato = ?
+        SET prezzo_vendita = ?, ora = ?, luogo = ?, condizioni = ?, id_libro = ?, stato = ?
         WHERE id_annuncio = ?";
 
         $stm = $this->pdo->prepare($dml);
