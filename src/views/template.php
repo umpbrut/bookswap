@@ -105,38 +105,38 @@
 </head>
 <body>
 
+<?php
+$action = $_GET['action'] ?? 'index';
+$page   = $_GET['page']   ?? 'annunci';
+?>
+
 <header>
     <a href="index.php?page=annunci" class="logo">BookSwap</a>
     <nav>
         <a href="index.php?page=annunci"
-           <?= (!isset($_GET['action']) || $_GET['action'] === 'index') && ($_GET['page'] ?? '') === 'annunci' ? 'class="active"' : '' ?>>
+           <?= ($page === 'annunci' && $action === 'index') ? 'class="active"' : '' ?>>
             Annunci
         </a>
         <a href="index.php?page=annunci&action=personal"
-           <?= (($_GET['action'] ?? '') === 'personal') ? 'class="active"' : '' ?>>
+           <?= ($page === 'annunci' && $action === 'personal') ? 'class="active"' : '' ?>>
             I miei annunci
         </a>
         <?php if (isset($_SESSION['id_utente'])): ?>
         <a href="index.php?page=annunci&action=create" class="nav-btn">+ Nuovo</a>
         <?php endif; ?>
         <a href="index.php?page=preferiti&action=index"
-           <?= (($_GET['page'] ?? '') === 'preferiti') ? 'class="active"' : '' ?>>
+           <?= ($page === 'preferiti') ? 'class="active"' : '' ?>>
             Preferiti
         </a>
         <a href="index.php?page=personal&action=index"
-           <?= (($_GET['page'] ?? '') === 'personal') ? 'class="active"' : '' ?>>
+           <?= ($page === 'personal') ? 'class="active"' : '' ?>>
             Profilo
         </a>
     </nav>
 </header>
 
-<?php
-$action = $_GET['action'] ?? 'index';
-$page   = $_GET['page']   ?? 'annunci';
-?>
-
-<?php /* Hero: solo nella pagina annunci index, non su preferiti, personal, create ecc. */ ?>
 <?php if ($page === 'annunci' && $action === 'index'): ?>
+<!-- Hero: solo nella pagina principale degli annunci -->
 <div class="hero">
     <div class="hero-bg"></div>
     <div class="hero-content">
@@ -149,8 +149,8 @@ $page   = $_GET['page']   ?? 'annunci';
 <?php endif; ?>
 
 <main>
-    <?php if (($page === 'annunci' ||$page === 'preferiti')  && ($action === 'index')): ?>
-        <?php /* Titolo sezione e griglia annunci — solo nella index */ ?>
+
+    <?php if ($page === 'annunci' && $action === 'index'): ?>
         <div id="annunci"></div>
         <section>
             <p class="eyebrow">Libri disponibili</p>
@@ -159,17 +159,23 @@ $page   = $_GET['page']   ?? 'annunci';
         </section>
 
     <?php elseif ($page === 'annunci' && $action === 'personal'): ?>
-        <?php /* Titolo sezione e griglia annunci personali */ ?>
         <section>
             <p class="eyebrow">Area personale</p>
             <h2 class="section-title">I miei annunci</h2>
             <?php include 'table_personal.php'; ?>
         </section>
 
+    <?php elseif ($page === 'preferiti' && $action === 'index'): ?>
+        <section>
+            <p class="eyebrow">La tua libreria</p>
+            <h2 class="section-title">I miei preferiti</h2>
+            <?php include 'table_preferiti.php'; ?>
+        </section>
+
     <?php endif; ?>
 
-    <?php /* Form create, update, e viste di altre pagine (preferiti, profilo ecc.) */ ?>
     <?php if (!empty($view)) include $view; ?>
+
 </main>
 
 <footer>
