@@ -1,6 +1,6 @@
 <!-- <form action="index.php?page=annunci&action=edit" method="post">
     
-    <input type="hidden" name="id_annuncio" value="<?php echo $annuncio['id_annuncio']; ?>">
+    <input type="hidden" name="id_annuncio" value="<?php //echo $annuncio['id_annuncio']; ?>">
 
     <input type="hidden" name="id_libro" id="id_libro_hidden">
 
@@ -60,7 +60,7 @@
     <br><br>
 
     <label for="ora">Ora:</label>
-    <input type="time" name="ora" id="ora" value="<?php echo date('H:i'); ?>" required>
+    <input type="time" name="ora" id="ora" value="<?php //echo date('H:i'); ?>" required>
 
     <br><br>
 
@@ -86,7 +86,7 @@
     </select>
 
     <br><br>
-    <input type="hidden" name="id_annuncio" value="<?php echo $_GET['id_annuncio']?>">
+    <input type="hidden" name="id_annuncio" value="<?php //echo $_GET['id_annuncio']?>">
 
     <button type="submit">Salva Modifiche</button>
 </form> -->
@@ -147,8 +147,8 @@ $annuncio = $table[0];
 
     <br>
 
-    <label for="prezzo">Prezzo (€):</label>
-    <input type="number" step="0.01" name="prezzo" id="prezzo" value="<?php echo $annuncio['prezzo']; ?>" required>
+    <label for="prezzo_vendita">Prezzo (€):</label>
+    <input type="number" step="0.01" name="prezzo_vendita" id="prezzo_vendita" value="<?php echo $annuncio['prezzo_vendita']; ?>" required>
 
     <br><br>
 

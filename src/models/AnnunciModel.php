@@ -21,7 +21,9 @@ class AnnunciModel{
 
     public function selectAnnunciByUtente(array $param=[]) : array{
         $id=$_SESSION['id_utente'];
-        $dql = "SELECT * FROM Annunci WHERE id_creatore = $id";
+        $dql = "SELECT * FROM Annunci
+        JOIN Libri USING(id_libro)
+        WHERE id_creatore = $id";
 
         $stm = $this->pdo->prepare($dql);
         $stm->execute($param);
@@ -47,7 +49,7 @@ class AnnunciModel{
     }
 
     public function insertRecord(array $param) : bool{
-        $dml="INSERT INTO Annunci(`prezzo`,`data`,`ora`,`luogo`,`id_creatore`,`id_libro`,`condizioni`)
+        $dml="INSERT INTO Annunci(`prezzo_vendita`,`data`,`ora`,`luogo`,`id_creatore`,`id_libro`,`condizioni`)
         VALUES(?,?,?,?,?,?,?)";
 
         $stm = $this->pdo->prepare($dml);
@@ -67,7 +69,7 @@ class AnnunciModel{
 
     public function updateRecord(array $param) : bool{
         $dml="UPDATE Annunci
-        SET prezzo = ?, ora = ?, luogo = ?, condizioni = ?, id_libro = ?, stato = ?
+        SET prezzo_vendita = ?, ora = ?, luogo = ?, condizioni = ?, id_libro = ?, stato = ?
         WHERE id_annuncio = ?";
 
         $stm = $this->pdo->prepare($dml);

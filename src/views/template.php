@@ -4,125 +4,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookSwap | ISIT BOOKS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>BookSwap | ISIT Books</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        :root { color-scheme: dark; }
-
+        :root {
+            --bg:     #faf8f5;
+            --bg2:    #f3f0ea;
+            --bg3:    #ebe6dc;
+            --gold:   #9c6b3c;
+            --gold2:  #b8844f;
+            --ink:    #2a1f14;
+            --muted:  #7a6a58;
+            --border: rgba(156,107,60,0.18);
+            --shadow: 0 2px 20px rgba(60,40,20,0.08);
+        }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'DM Sans', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(rgba(15,10,8,0.9), rgba(15,10,8,0.9)), 
-                        url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=3000');
-            background-size: cover; background-attachment: fixed; color: #f5f0e8;
-            display: flex; flex-direction: column; align-items: center;
-        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); }
 
-        /* Navigazione Superiore Ripristinata */
+        /* HEADER */
         header {
-            width: 100%;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 900;
+            padding: 18px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(250,248,245,0.93);
+            backdrop-filter: blur(16px);
+            border-bottom: 0.5px solid var(--border);
         }
-        header a {
-            color: #a89880;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            transition: 0.3s;
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem; font-weight: 600;
+            letter-spacing: 4px; text-transform: uppercase;
+            color: var(--gold); text-decoration: none;
         }
-        header a:hover, header a.active {
-            color: #9c6b3c;
+        nav { display: flex; gap: 28px; align-items: center; }
+        nav a {
+            color: var(--muted); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+            transition: color 0.3s; padding: 6px 0;
+            border-bottom: 1.5px solid transparent;
         }
-        
-        .annuncio-card {
-            background: rgba(12, 9, 7, 0.96); backdrop-filter: blur(25px); border-radius: 20px;
-            border: 1px solid rgba(156,107,60,0.15); padding: 2.5rem; width: 100%; max-width: 580px; margin: 20px 0;
+        nav a:hover, nav a.active { color: var(--gold); border-bottom-color: var(--gold); }
+        .nav-btn {
+            padding: 8px 20px !important;
+            background: var(--gold) !important; color: white !important;
+            border-radius: 3px; border-bottom: none !important;
+        }
+        .nav-btn:hover { background: var(--gold2) !important; }
+
+        /* HERO */
+        .hero {
+            height: 100vh; min-height: 600px;
+            position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 0 24px;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background:
+                linear-gradient(to bottom, rgba(250,248,245,0.25) 0%, rgba(250,248,245,0.65) 65%, var(--bg) 100%),
+                url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=2400')
+                center/cover no-repeat;
+            animation: zoom 20s ease-in-out infinite alternate;
+        }
+        @keyframes zoom { from { transform: scale(1.04); } to { transform: scale(1.10); } }
+        .hero-content { position: relative; z-index: 2; max-width: 740px; }
+        .hero-label { font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 28px; }
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+            font-weight: 300; font-style: italic; line-height: 1.22; color: var(--ink);
+        }
+        .hero-title em { color: var(--gold); }
+        .hero-attr { margin-top: 16px; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+        .hero-cta {
+            display: inline-block; margin-top: 48px; padding: 14px 44px;
+            background: var(--gold); color: white; text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
+            border-radius: 3px; transition: background 0.3s;
+        }
+        .hero-cta:hover { background: var(--gold2); }
+
+        /* LAYOUT */
+        main { padding-top: 80px; }
+        section { max-width: 1200px; margin: 0 auto; padding: 60px 40px; }
+        .eyebrow { font-size: 0.62rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+        h2.section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            font-weight: 300; margin-bottom: 32px;
         }
 
-        h2 { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; margin-bottom: 2rem; text-align: center; }
-        label { display: block; font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: #a89880; margin-bottom: 10px; }
-
-        input {
-            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(156,107,60,0.2);
-            border-radius: 8px; padding: 14px; color: #f5f0e8; outline: none; transition: 0.3s;
-        }
-        input::placeholder { color: rgba(168, 152, 128, 0.5); font-size: 0.85rem; }
-
-        /* Dropdown e Prezzo */
-        .select-custom-wrapper { position: relative; cursor: pointer; }
-        .select-trigger {
-            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(156,107,60,0.2);
-            border-radius: 8px; padding: 14px; color: #f5f0e8; display: flex; justify-content: space-between; align-items: center;
-        }
-        .select-options {
-            position: absolute; top: calc(100% + 5px); left: 0; width: 100%; 
-            background: #120e0c; border: 1px solid rgba(156,107,60,0.4); border-radius: 8px;
-            z-index: 10000; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            max-height: 220px; overflow-y: auto;
-        }
-        .select-options div { padding: 12px 16px; border-bottom: 1px solid rgba(156,107,60,0.05); transition: 0.2s; color: #d1c7b7; }
-        .select-options div:hover { background: #9c6b3c; color: #fff; }
-
-        .price-wrapper { position: relative; display: flex; align-items: center; }
-        .price-controls { position: absolute; right: 10px; display: flex; flex-direction: column; }
-        .arrow-btn { background: transparent; border: none; color: #9c6b3c; width: 22px; cursor: pointer; font-size: 10px; }
-
-        /* Immagini */
-        .upload-container {
-            border: 1.5px dashed rgba(156,107,60,0.2); border-radius: 12px; padding: 30px;
-            text-align: center; cursor: pointer; background: rgba(156,107,60,0.02);
-        }
-        .upload-container.disabled { border-color: rgba(156,107,60,0.1); opacity: 0.5; cursor: not-allowed; }
-        .error-msg { color: #9c6b3c; font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; }
-        
-        .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
-        .preview-item { position: relative; padding-top: 100%; border-radius: 8px; overflow: hidden; border: 1px solid rgba(156,107,60,0.2); }
-        .preview-item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        .remove-img { position: absolute; top: 5px; right: 5px; background: #c0392b; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; z-index: 10; font-size: 10px; }
-
-        .btn-submit {
-            width: 100%; margin-top: 2.5rem; padding: 1.3rem; background: linear-gradient(135deg, #a67c52, #7d5a36);
-            border: none; border-radius: 10px; color: white; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; font-weight: 600;
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border); padding: 24px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.7rem; color: var(--muted); background: white;
         }
     </style>
 </head>
 <body>
-    <header>
-        <a href="index.php?page=annunci">Annunci</a>
-        <a href="index.php?page=annunci&action=create" class="active">Nuovo</a>
-        <a href="index.php?page=annunci&action=personal">I miei annunci</a>
-        <a href="index.php?page=preferiti&action=index">Preferiti</a>
-        <a href="index.php?page=personal&action=index">Area Personale</a>
-    </header>
 
-    
-    <main>
+<header>
+    <a href="index.php?page=annunci" class="logo">BookSwap</a>
+    <nav>
+        <a href="index.php?page=annunci"
+           <?= (!isset($_GET['action']) || $_GET['action'] === 'index') && ($_GET['page'] ?? '') === 'annunci' ? 'class="active"' : '' ?>>
+            Annunci
+        </a>
+        <a href="index.php?page=annunci&action=personal"
+           <?= (($_GET['action'] ?? '') === 'personal') ? 'class="active"' : '' ?>>
+            I miei annunci
+        </a>
+        <?php if (isset($_SESSION['id_utente'])): ?>
+        <a href="index.php?page=annunci&action=create" class="nav-btn">+ Nuovo</a>
+        <?php endif; ?>
+        <a href="index.php?page=preferiti&action=index"
+           <?= (($_GET['page'] ?? '') === 'preferiti') ? 'class="active"' : '' ?>>
+            Preferiti
+        </a>
+        <a href="index.php?page=personal&action=index"
+           <?= (($_GET['page'] ?? '') === 'personal') ? 'class="active"' : '' ?>>
+            Profilo
+        </a>
+    </nav>
+</header>
+
+<?php
+$action = $_GET['action'] ?? 'index';
+$page   = $_GET['page']   ?? 'annunci';
+?>
+
+<?php /* Hero: solo nella pagina annunci index, non su preferiti, personal, create ecc. */ ?>
+<?php if ($page === 'annunci' && $action === 'index'): ?>
+<div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+        <p class="hero-label">BookSwap — ISIT Books</p>
+        <h1 class="hero-title">"Un libro è un giardino<br>che puoi custodire <em>in tasca</em>."</h1>
+        <p class="hero-attr">— Francis Bacon</p>
+        <a href="#annunci" class="hero-cta">Esplora gli Annunci</a>
+    </div>
+</div>
+<?php endif; ?>
+
+<main>
+    <?php if (($page === 'annunci' ||$page === 'preferiti')  && ($action === 'index')): ?>
+        <?php /* Titolo sezione e griglia annunci — solo nella index */ ?>
+        <div id="annunci"></div>
         <section>
-                <?php
-                $action = $_GET['action'] ?? 'index';
-                    if ($action == 'personal'){
-                        include 'table_personal.php';
-                    } else {
-                        include 'table.php';
-                    }       
-                ?>
+            <p class="eyebrow">Libri disponibili</p>
+            <h2 class="section-title">Annunci recenti</h2>
+            <?php include 'table.php'; ?>
         </section>
 
+    <?php elseif ($page === 'annunci' && $action === 'personal'): ?>
+        <?php /* Titolo sezione e griglia annunci personali */ ?>
+        <section>
+            <p class="eyebrow">Area personale</p>
+            <h2 class="section-title">I miei annunci</h2>
+            <?php include 'table_personal.php'; ?>
+        </section>
 
-        <?php if(!empty($view)) include $view; ?>
-    </main>
+    <?php endif; ?>
 
-    <footer>
-            <hr>
-            FOOTER &copy; 2026
-        </footer>
+    <?php /* Form create, update, e viste di altre pagine (preferiti, profilo ecc.) */ ?>
+    <?php if (!empty($view)) include $view; ?>
+</main>
+
+<footer>
+    <span>© 2026 BookSwap — ISIT Books</span>
+    <span>Progetto scolastico</span>
+</footer>
+
 </body>
 </html>

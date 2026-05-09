@@ -23,6 +23,21 @@ if(isset($_GET['get_libri'])){
   sendResponse($list);
 }
 
+if(isset($_GET['cerca_annunci'])){
+  $sql = "SELECT * FROM Annunci
+  JOIN Libri USING(id_libro)";
+  $param=[];
+  if(isset($_GET['testo'])){
+    $sql .= " WHERE titolo LIKE concat('%',?,'%')";
+    $param=[$_GET['testo']];
+  }
+
+  $stm = $db->prepare($sql);
+  $stm->execute($param);
+  $list = $stm->fetchAll(PDO::FETCH_ASSOC);
+  sendResponse($list);
+}
+
 function sendResponse($message, $responseCode=200, $type="json"){
     switch($type){
       case 'json': 

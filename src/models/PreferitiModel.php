@@ -13,6 +13,7 @@ class PreferitiModel{
     public function selectAll(array $param=[]) : array{
         $dql = "SELECT * FROM Preferiti
                 JOIN Annunci using(id_annuncio)
+                JOIN Libri USING(id_libro)
                 WHERE id_utente = ?";
 
         $stm = $this->pdo->prepare($dql);
