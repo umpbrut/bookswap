@@ -117,21 +117,29 @@ $page   = $_GET['page']   ?? 'annunci';
            <?= ($page === 'annunci' && $action === 'index') ? 'class="active"' : '' ?>>
             Annunci
         </a>
+
+        <a href="index.php?page=annunci&action=create" class="nav-btn">+ Pubblica</a>
+
         <a href="index.php?page=annunci&action=personal"
            <?= ($page === 'annunci' && $action === 'personal') ? 'class="active"' : '' ?>>
             I miei annunci
         </a>
-        <?php if (isset($_SESSION['id_utente'])): ?>
-        <a href="index.php?page=annunci&action=create" class="nav-btn">+ Nuovo</a>
-        <?php endif; ?>
+
         <a href="index.php?page=preferiti&action=index"
            <?= ($page === 'preferiti') ? 'class="active"' : '' ?>>
             Preferiti
         </a>
-        <a href="index.php?page=personal&action=index"
-           <?= ($page === 'personal') ? 'class="active"' : '' ?>>
-            Profilo
-        </a>
+        <?php if(isset($_SESSION['id_utente'])):?>
+            <a href="index.php?page=personal&action=index"
+            <?= ($page === 'personal') ? 'class="active"' : '' ?>>
+                Profilo
+            </a>
+        <?php else:?>
+            <a href="index.php?page=login&action=login">
+                Login
+            </a>
+        <?php endif;?>
+        
     </nav>
 </header>
 
