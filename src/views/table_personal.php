@@ -10,6 +10,10 @@
         border-radius: 10px; overflow: hidden;
         box-shadow: var(--shadow);
         transition: transform 0.3s, box-shadow 0.3s;
+
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
     .book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(60,40,20,0.14); }
     .card-img-placeholder {
@@ -19,9 +23,12 @@
         font-family: 'Cormorant Garamond', serif; font-size: 3rem;
         color: var(--gold); opacity: 0.45;
     }
-    .card-body { padding: 16px 18px 20px; }
+    .card-body{ 
+        padding: 16px 18px 20px; 
+        flex-grow: 1;
+    }
     .card-materia { font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
-    .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400; line-height: 1.3; margin-bottom: 4px; }
+    .card-title {font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400; line-height: 1.3; margin-bottom: 4px; }
     .card-autore { font-size: 0.76rem; color: var(--muted); margin-bottom: 14px; }
     .card-footer { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .card-price { font-size: 1.1rem; font-weight: 500; color: var(--gold); }
