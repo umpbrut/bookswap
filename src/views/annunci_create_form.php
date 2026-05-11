@@ -1,7 +1,6 @@
 <?php defined('APP') or die('Accesso Negato'); ?>
 
 <style>
-    /* AGGIUNTA: Sfondo animato identico agli altri template */
     @keyframes scrollBackground {
         from { background-position: 0 0; }
         to { background-position: -2000px 0; }
@@ -15,26 +14,28 @@
         min-height: 100vh;
         margin: 0;
         animation: scrollBackground 80s linear infinite;
-        display: flex; /* Per centrare la card nello schermo */
+        display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    /* DA QUI IN POI: Tutto identico al tuo originale */
     .annuncio-card {
-        background: #121212;
-        color: #e0e0e0;
+        background: rgba(255, 255, 255, 0.93);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        color: #1a1a1a;
         padding: 2rem;
         border-radius: 15px;
         max-width: 600px;
-        margin: auto;
+        width: 100%;
+        margin: 2rem auto;
         font-family: 'Segoe UI', sans-serif;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5); /* Aggiunto ombra per staccare dallo sfondo */
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
     }
 
     .annuncio-card h2 {
         text-align: center;
-        color: #fff;
+        color: #1a1a1a;
         font-family: 'Georgia', serif;
         font-size: 2.5rem;
         margin-bottom: 2rem;
@@ -45,15 +46,15 @@
         text-transform: uppercase;
         font-size: 0.75rem;
         letter-spacing: 1px;
-        color: #a89880;
+        color: #7a6040;
         margin-bottom: 0.5rem;
     }
 
     input {
         width: 100%;
-        background: #1a1a1a;
-        border: 1px solid #333;
-        color: #fff;
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+        color: #1a1a1a;
         padding: 12px;
         border-radius: 8px;
         box-sizing: border-box;
@@ -70,7 +71,8 @@
         border-radius: 8px;
         z-index: 1000;
         display: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        border: 1px solid #ddd;
     }
 
     #custom_results::before {
@@ -95,36 +97,47 @@
     #custom_results div:hover { background: #f0f0f0; border-radius: 8px; }
 
     .select-custom-wrapper { position: relative; cursor: pointer; }
+
     .select-trigger {
-        background: #1a1a1a;
-        border: 1px solid #333;
+        background: #f5f5f5;
+        border: 1px solid #ccc;
         padding: 12px;
         border-radius: 8px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        color: #1a1a1a;
     }
+
     .select-options-cond {
         position: absolute;
         width: 100%;
-        background: #1a1a1a;
-        border: 1px solid #333;
+        background: #f5f5f5;
+        border: 1px solid #ccc;
         border-radius: 8px;
         z-index: 100;
         display: none;
         margin-top: 5px;
     }
-    .select-options-cond div { padding: 10px; border-bottom: 1px solid #333; }
-    .select-options-cond div:hover { background: #252525; }
+
+    .select-options-cond div {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        color: #1a1a1a;
+        cursor: pointer;
+    }
+
+    .select-options-cond div:hover { background: #ebebeb; }
 
     .upload-container {
-        border: 2px dashed #333;
+        border: 2px dashed #ccc;
         padding: 20px;
         text-align: center;
         border-radius: 10px;
         cursor: pointer;
         margin-top: 10px;
     }
+
     .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
     .preview-item { position: relative; height: 80px; }
     .preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
@@ -144,10 +157,12 @@
         margin-top: 2rem;
     }
 
+    .btn-submit:hover { background: #a07840; }
+
     .form-grid {
-        display: grid; 
-        grid-template-columns: 1fr 1fr; 
-        gap: 20px; 
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
         margin-bottom: 1.5rem;
     }
 </style>
@@ -158,10 +173,10 @@
     <form action="index.php?page=annunci&action=store" method="post" enctype="multipart/form-data" id="publishForm">
         <input type="hidden" name="id_libro" id="id_libro_hidden">
         <input type="hidden" name="condizioni" id="condizioni_hidden" value="Nuovo (Mai aperto)">
-        
+
         <div style="margin-bottom: 1.5rem;" class="search-container">
             <label>Titolo del Libro</label>
-            <input type="text" id="search" oninput="get_libri()" placeholder="Titolo " autocomplete="off">
+            <input type="text" id="search" oninput="get_libri()" placeholder="Titolo" autocomplete="off">
             <div id="custom_results"></div>
         </div>
 
@@ -210,7 +225,7 @@
 
         <label>Immagini (Max 3)</label>
         <div class="upload-container" onclick="document.getElementById('fileInput').click()">
-            <span style="color: #a89880; font-size: 0.9rem;">Aggiungi fino a 3 immagini<br><small>Clicca qui</small></span>
+            <span style="color: #7a6040; font-size: 0.9rem;">Aggiungi fino a 3 immagini<br><small>Clicca qui</small></span>
             <input type="file" id="fileInput" name="foto[]" multiple accept="image/*" style="display:none" onchange="previewImages(this.files)">
         </div>
         <div id="previewGrid" class="preview-grid"></div>
@@ -220,17 +235,16 @@
 </div>
 
 <script>
-    // Logica JavaScript rimasta intatta
     function get_libri() {
         let cerca = document.getElementById('search').value;
         let container = document.getElementById('custom_results');
         let hiddenInput = document.getElementById('id_libro_hidden');
         let isbnInput = document.getElementById('isbn_input');
 
-        if (cerca.length < 2) { 
-            container.style.display = 'none'; 
+        if (cerca.length < 2) {
+            container.style.display = 'none';
             hiddenInput.value = "";
-            return; 
+            return;
         }
 
         fetch("libri.php?get_libri&testo=" + encodeURIComponent(cerca))
