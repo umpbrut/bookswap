@@ -1,8 +1,12 @@
 <?php
 defined('APP') or die('Accesso Negato');
 
-require_once 'config/imgconfig.php';
 require_once 'models/AnnunciModel.php';
+
+// ─── Percorsi immagini ───────────────────────────────────────────────
+define('IMG_DIR', '/var/www/html/govoni/images/');          // percorso fisico sul server
+define('IMG_URL', 'http://lab.isit100.fe.it:8092/govoni/images/'); // URL pubblico
+// ────────────────────────────────────────────────────────────────────
 
 class AnnunciController{
     private $model;
@@ -62,36 +66,29 @@ class AnnunciController{
         $id_libro       = trim($_POST['id_libro']);
 
         $param = [$prezzo_vendita, $data, $ora, $luogo, $id_creatore, $id_libro, $condizioni];
-        $id_annuncio = $this->model->insertRecord($param); // ora ritorna l'id
+        $id_annuncio = $this->model->insertRecord($param);
 
-        // ── Upload immagini via FTP ──
+        // ── Upload immagini con move_uploaded_file ──
         if ($id_annuncio && isset($_FILES['foto']) && !empty($_FILES['foto']['name'][0])) {
-            $ftp = ftp_connect(FTP_HOST);
+            $files    = $_FILES['foto'];
+            $count    = count($files['name']);
+            $caricati = 0;
 
-            if ($ftp && ftp_login($ftp, FTP_USER, FTP_PASS)) {
-                ftp_pasv($ftp, true); // modalità passiva (funziona dietro NAT/firewall)
+            for ($i = 0; $i < $count && $caricati < 3; $i++) {
+                if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;
 
-                $files    = $_FILES['foto'];
-                $count    = count($files['name']);
-                $caricati = 0;
+                $tmp = $files['tmp_name'][$i];
+                $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
 
-                for ($i = 0; $i < $count && $caricati < 3; $i++) {
-                    if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;
+                // Nome univoco per evitare collisioni
+                $nomeFile    = 'annuncio_' . $id_annuncio . '_' . time() . '_' . $i . '.' . $ext;
+                $destinazione = IMG_DIR . $nomeFile;
 
-                    $tmp      = $files['tmp_name'][$i];
-                    $ext      = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
-                    // Nome univoco: id_annuncio + timestamp + indice
-                    $nomeFile = 'annuncio_' . $id_annuncio . '_' . time() . '_' . $i . '.' . $ext;
-                    $percorsoFtp = FTP_DIR . $nomeFile;
-
-                    if (ftp_put($ftp, $percorsoFtp, $tmp, FTP_BINARY)) {
-                        $link = IMG_URL . $nomeFile;
-                        $this->model->insertImmagine([$link, $id_annuncio]);
-                        $caricati++;
-                    }
+                if (move_uploaded_file($tmp, $destinazione)) {
+                    $link = IMG_URL . $nomeFile;
+                    $this->model->insertImmagine([$link, $id_annuncio]);
+                    $caricati++;
                 }
-
-                ftp_close($ftp);
             }
         }
 

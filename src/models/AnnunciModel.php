@@ -10,20 +10,52 @@ class AnnunciModel{
         $this->pdo=DB::connect();
     }
 
+    // public function selectAll(array $param=[]) : array{
+    //     $dql = "SELECT * FROM Annunci
+    //             JOIN Libri using(id_libro)
+    //             JOIN Immagini using(id_annuncio)";
+
+    //     $stm = $this->pdo->prepare($dql);
+    //     $stm->execute($param);
+    //     return $stm->fetchAll(PDO::FETCH_ASSOC);
+    // }
+
     public function selectAll(array $param=[]) : array{
-        $dql = "SELECT * FROM Annunci
-                JOIN Libri using(id_libro)";
+        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
+                GROUP_CONCAT(Immagini.link) as links
+                FROM Annunci
+                JOIN Libri USING(id_libro)
+                JOIN Materie USING(id_materia)
+                LEFT JOIN Immagini USING(id_annuncio)
+                GROUP BY id_annuncio";
 
         $stm = $this->pdo->prepare($dql);
         $stm->execute($param);
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // public function selectAnnunciByUtente(array $param=[]) : array{
+    //     $id=$_SESSION['id_utente'];
+    //     $dql = "SELECT * FROM Annunci
+    //     JOIN Libri USING(id_libro)
+    //     WHERE id_creatore = $id";
+
+    //     $stm = $this->pdo->prepare($dql);
+    //     $stm->execute($param);
+    //     return $stm->fetchAll(PDO::FETCH_ASSOC);
+    // }
+
     public function selectAnnunciByUtente(array $param=[]) : array{
-        $id=$_SESSION['id_utente'];
-        $dql = "SELECT * FROM Annunci
-        JOIN Libri USING(id_libro)
-        WHERE id_creatore = $id";
+        $id = $_SESSION['id_utente'];
+        // Aggiungiamo la JOIN per le immagini e le materie
+        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
+                GROUP_CONCAT(Immagini.link) as links
+                FROM Annunci
+                JOIN Libri USING(id_libro)
+                JOIN Materie USING(id_materia)
+                LEFT JOIN Immagini USING(id_annuncio)
+                WHERE id_creatore = $id
+                GROUP BY id_annuncio"; // GROUP BY è vitale per non duplicare le righe
 
         $stm = $this->pdo->prepare($dql);
         $stm->execute($param);
@@ -89,12 +121,19 @@ class AnnunciModel{
     }
 
     public function selectByFiltri(array $param) : array {
-        $dql = "SELECT * FROM Annunci A
-                JOIN Libri L USING(id_libro)
-                WHERE L.id_materia LIKE ?
-                AND A.condizioni LIKE ?
-                AND A.prezzo_vendita <= ?";
+        // 1. Usiamo la stessa struttura di selectAll con GROUP_CONCAT e JOIN su Materie
+        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
+                GROUP_CONCAT(Immagini.link) as links
+                FROM Annunci
+                JOIN Libri USING(id_libro)
+                JOIN Materie USING(id_materia)
+                LEFT JOIN Immagini USING(id_annuncio)
+                WHERE Materie.id_materia LIKE ?
+                AND Annunci.condizioni LIKE ?
+                AND Annunci.prezzo_vendita <= ?
+                GROUP BY id_annuncio"; // Fondamentale per non avere duplicati
 
+        // 2. Prepariamo i valori (gestendo i casi vuoti)
         $id_materia = !empty($param['id_materia']) ? $param['id_materia'] : '%';
         $condizioni = !empty($param['condizioni']) ? $param['condizioni'] : '%';
         $prezzo_max = !empty($param['prezzo_max']) ? $param['prezzo_max'] : 999999;
@@ -102,7 +141,7 @@ class AnnunciModel{
         $stm = $this->pdo->prepare($dql);
         $stm->execute([$id_materia, $condizioni, $prezzo_max]);
         return $stm->fetchAll(PDO::FETCH_ASSOC);
-    }           
+    }         
 
     public function selectMaterie() : array {
         $stm = $this->pdo->prepare("SELECT id_materia, nome FROM Materie");

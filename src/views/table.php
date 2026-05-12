@@ -313,6 +313,7 @@
              data-ora="<?= htmlspecialchars($a['ora'] ?? '') ?>"
              data-luogo="<?= htmlspecialchars($a['luogo'] ?? '') ?>"
              data-stato="<?= htmlspecialchars($a['stato'] ?? 'Disponibile') ?>"
+             data-immagini="<?= htmlspecialchars($a['links'] ?? '') ?>"
              onclick="apriModal(this)">
 
             <?php if (isset($_SESSION['id_utente'])): ?>
@@ -321,7 +322,19 @@
                onclick="event.stopPropagation()">❤️</a>
             <?php endif; ?>
 
-            <div class="card-img-placeholder">&#9413;</div>
+            <?php 
+                // Prendiamo la prima immagine del gruppo (se esiste)
+                $links = !empty($a['links']) ? explode(',', $a['links']) : [];
+                $img1 = !empty($links) ? $links[0] : null;
+            ?>
+
+            <div class="card-img-container" style="width:100%; aspect-ratio:3/4; overflow:hidden; background:#f0f0f0;">
+                <?php if ($img1): ?>
+                    <img src="<?= $img1 ?>" alt="Copertina" style="width:100%; height:100%; object-fit:cover;">
+                <?php else: ?>
+                    <div class="card-img-placeholder" style="height:100%; display:flex; align-items:center; justify-content:center;">&#9413;</div>
+                <?php endif; ?>
+            </div>
 
             <div class="card-body">
                 <p class="card-materia"><?= htmlspecialchars($a['materia'] ?? '') ?></p>
@@ -422,6 +435,7 @@
     /* ---- Modal ---- */
     let immagineCorrente = 0;
     const NUM_IMMAGINI = 3; // In futuro si potrebbe passare dal DB
+    let elencoImmagini = []; // Variabile globale per le immagini dell'annuncio aperto
 
     function apriModal(card) {
         // Popola i campi con i data-attribute della card
@@ -445,7 +459,10 @@
             btnPref.classList.add('nascosto');
         }
 
-        // Reset galleria
+        // Gestione immagini
+        const stringaImmagini = card.dataset.immagini;
+        elencoImmagini = stringaImmagini ? stringaImmagini.split(',') : [];
+        
         immagineCorrente = 0;
         aggiornaGalleria();
 
@@ -477,11 +494,39 @@
     }
 
     function aggiornaGalleria() {
-        // Evidenzia thumbnail attiva
-        document.querySelectorAll('.gallery-thumb').forEach(function(t, i) {
-            t.classList.toggle('attiva', i === immagineCorrente);
-        });
-        // Qui in futuro si aggiorna l'immagine principale se ci sono URL reali
+        const mainBox = document.getElementById('modal-img-main');
+        const thumbsContainer = document.getElementById('gallery-thumbs');
+        const placeholderIcon = document.getElementById('modal-placeholder-icon');
+
+        // Svuota le miniature precedenti
+        thumbsContainer.innerHTML = '';
+
+        if (elencoImmagini.length > 0) {
+            // Mostra immagine principale
+            placeholderIcon.style.display = 'none';
+            let imgMain = mainBox.querySelector('.img-fluida');
+            if(!imgMain) {
+                imgMain = document.createElement('img');
+                imgMain.className = 'img-fluida';
+                imgMain.style = 'width:100%; height:100%; object-fit:cover;';
+                mainBox.appendChild(imgMain);
+            }
+            imgMain.src = elencoImmagini[immagineCorrente];
+            imgMain.style.display = 'block';
+
+            // Crea le miniature
+            elencoImmagini.forEach((src, i) => {
+                let thumb = document.createElement('div');
+                thumb.className = 'gallery-thumb' + (i === immagineCorrente ? ' attiva' : '');
+                thumb.innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit:cover; border-radius:5px;">`;
+                thumb.onclick = () => selezionaThumb(i);
+                thumbsContainer.appendChild(thumb);
+            });
+        } else {
+            // Nessuna immagine: mostra placeholder
+            placeholderIcon.style.display = 'block';
+            if(mainBox.querySelector('.img-fluida')) mainBox.querySelector('.img-fluida').style.display = 'none';
+        }
     }
 </script>
 
