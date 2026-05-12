@@ -11,10 +11,15 @@ class PreferitiModel{
     }
 
     public function selectAll(array $param=[]) : array{
-        $dql = "SELECT * FROM Preferiti
-                JOIN Annunci using(id_annuncio)
+        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia,
+                       GROUP_CONCAT(Immagini.link) as immagini
+                FROM Preferiti
+                JOIN Annunci USING(id_annuncio)
                 JOIN Libri USING(id_libro)
-                WHERE id_utente = ?";
+                JOIN Materie USING(id_materia)
+                LEFT JOIN Immagini USING(id_annuncio)
+                WHERE Preferiti.id_utente = ?
+                GROUP BY Annunci.id_annuncio";
 
         $stm = $this->pdo->prepare($dql);
         $stm->execute($param);

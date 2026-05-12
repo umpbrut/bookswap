@@ -22,7 +22,7 @@ class AnnunciModel{
 
     public function selectAll(array $param=[]) : array{
         $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
-                GROUP_CONCAT(Immagini.link) as links
+                GROUP_CONCAT(Immagini.link) as immagini
                 FROM Annunci
                 JOIN Libri USING(id_libro)
                 JOIN Materie USING(id_materia)
@@ -49,7 +49,7 @@ class AnnunciModel{
         $id = $_SESSION['id_utente'];
         // Aggiungiamo la JOIN per le immagini e le materie
         $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
-                GROUP_CONCAT(Immagini.link) as links
+                GROUP_CONCAT(Immagini.link) as immagini
                 FROM Annunci
                 JOIN Libri USING(id_libro)
                 JOIN Materie USING(id_materia)
@@ -111,7 +111,7 @@ class AnnunciModel{
 
     public function updateRecord(array $param) : bool{
         $dml="UPDATE Annunci
-        SET prezzo_vendita = ?, ora = ?, luogo = ?, condizioni = ?, id_libro = ?, stato = ?
+        SET prezzo_vendita = ?, data = ?, ora = ?, luogo = ?, condizioni = ?, id_libro = ?, stato = ?
         WHERE id_annuncio = ?";
 
         $stm = $this->pdo->prepare($dml);
@@ -123,7 +123,7 @@ class AnnunciModel{
     public function selectByFiltri(array $param) : array {
         // 1. Usiamo la stessa struttura di selectAll con GROUP_CONCAT e JOIN su Materie
         $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
-                GROUP_CONCAT(Immagini.link) as links
+                GROUP_CONCAT(Immagini.link) as immagini
                 FROM Annunci
                 JOIN Libri USING(id_libro)
                 JOIN Materie USING(id_materia)

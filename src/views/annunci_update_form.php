@@ -1,12 +1,15 @@
 <?php 
 $annuncio = $table[0];
+
+// Mappa condizioni brevi → estese (per compatibilità con dati già esistenti nel DB)
 $condizioniMap = [
     'Nuovo'  => 'Nuovo (Mai aperto)',
     'Ottime' => 'Ottime condizioni',
     'Buone'  => 'Buone condizioni',
     'Usato'  => 'Usato / Rovinato',
 ];
-$condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aperto)';
+// Se il valore è già esteso lo lascia, altrimenti lo converte
+$condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? $annuncio['condizioni'];
 ?>
 
 <style>
@@ -14,7 +17,6 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         from { background-position: 0 0; }
         to   { background-position: -2000px 0; }
     }
-
     body {
         font-family: 'Inter', sans-serif;
         background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
@@ -28,11 +30,9 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         align-items: center;
         justify-content: center;
     }
-
     .annuncio-card {
-        background: rgba(255, 255, 255, 0.94);
-        backdrop-filter: blur(6px)
-        -webkit-backdrop-filter: blur(6px)
+        background: rgba(255,255,255,0.94);
+        backdrop-filter: blur(6px);
         color: #1a1a1a;
         padding: 2rem;
         border-radius: 15px;
@@ -42,7 +42,6 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         font-family: 'Segoe UI', sans-serif;
         box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
-
     .annuncio-card h2 {
         text-align: center;
         color: #1a1a1a;
@@ -50,7 +49,6 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         font-size: 2.5rem;
         margin-bottom: 2rem;
     }
-
     label {
         display: block;
         text-transform: uppercase;
@@ -59,10 +57,10 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         color: #7a6040;
         margin-bottom: 0.5rem;
     }
-
     input[type="text"],
     input[type="number"],
-    input[type="time"] {
+    input[type="time"],
+    input[type="date"] {
         width: 100%;
         background: #f5f5f5;
         border: 1px solid #ccc;
@@ -71,12 +69,15 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         border-radius: 8px;
         box-sizing: border-box;
     }
-
+    input[readonly] {
+        background: #ececec;
+        color: #888;
+        cursor: not-allowed;
+    }
     .search-container { position: relative; }
-
     #custom_results {
         position: absolute;
-        top: calc(100% + 10px);
+        top: calc(100% + 4px);
         left: 0;
         width: 100%;
         background: white;
@@ -85,17 +86,9 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         display: none;
         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         border: 1px solid #ddd;
+        max-height: 220px;
+        overflow-y: auto;
     }
-
-    #custom_results::before {
-        content: "";
-        position: absolute;
-        bottom: 100%;
-        left: 20px;
-        border: 10px solid transparent;
-        border-bottom-color: white;
-    }
-
     #custom_results div {
         color: #333;
         padding: 12px 20px;
@@ -104,12 +97,9 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         border-bottom: 1px solid #eee;
         text-transform: uppercase;
     }
-
     #custom_results div:last-child { border-bottom: none; }
-    #custom_results div:hover { background: #f0f0f0; border-radius: 8px; }
-
+    #custom_results div:hover { background: #f0f0f0; }
     .select-custom-wrapper { position: relative; cursor: pointer; }
-
     .select-trigger {
         background: #f5f5f5;
         border: 1px solid #ccc;
@@ -120,29 +110,7 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         align-items: center;
         color: #1a1a1a;
     }
-
-    .select-options-cond {
-        position: absolute;
-        width: 100%;
-        background: #f5f5f5;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        z-index: 100;
-        display: none;
-        margin-top: 5px;
-    }
-
-    .select-options-cond div {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        color: #1a1a1a;
-        cursor: pointer;
-    }
-
-    .select-options-cond div:hover { background: #ebebeb; }
-
-    .select-stato-wrapper { position: relative; cursor: pointer; }
-
+    .select-options-cond,
     .select-options-stato {
         position: absolute;
         width: 100%;
@@ -153,23 +121,21 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         display: none;
         margin-top: 5px;
     }
-
+    .select-options-cond div,
     .select-options-stato div {
         padding: 10px;
         border-bottom: 1px solid #ddd;
         color: #1a1a1a;
         cursor: pointer;
     }
-
+    .select-options-cond div:hover,
     .select-options-stato div:hover { background: #ebebeb; }
-
     .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
         margin-bottom: 1.5rem;
     }
-
     .btn-submit {
         background: #b58d5b;
         color: white;
@@ -183,7 +149,6 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
         cursor: pointer;
         margin-top: 2rem;
     }
-
     .btn-submit:hover { background: #a07840; }
 </style>
 
@@ -192,110 +157,81 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
 
     <form action="index.php?page=annunci&action=edit" method="post">
 
-        <input type="hidden" name="id_annuncio" value="<?php echo $annuncio['id_annuncio']; ?>">
-        <input type="hidden" name="id_libro" id="id_libro_hidden" value="<?php echo $annuncio['id_libro']; ?>">
-        <input type="hidden" name="condizioni" id="condizioni_hidden" value="<?php echo $annuncio['condizioni']; ?>">
-        <input type="hidden" name="stato" id="stato_hidden" value="<?php echo $annuncio['stato']; ?>">
+        <input type="hidden" name="id_annuncio" value="<?= $annuncio['id_annuncio'] ?>">
+        <input type="hidden" name="id_libro"    id="id_libro_hidden" value="<?= $annuncio['id_libro'] ?>">
+        <input type="hidden" name="condizioni"  id="condizioni_hidden" value="<?= htmlspecialchars($condizioneAttuale) ?>">
+        <input type="hidden" name="stato"       id="stato_hidden" value="<?= htmlspecialchars($annuncio['stato']) ?>">
 
-        <div style="margin-bottom: 1.5rem;" class="search-container">
+        <!-- RICERCA TITOLO -->
+        <div style="margin-bottom:1.5rem;" class="search-container">
             <label>Libro</label>
             <input type="text" id="search" oninput="get_libri()"
                    placeholder="Cerca un libro..." autocomplete="off"
-                   value="<?php echo isset($annuncio['titolo']) ? htmlspecialchars($annuncio['titolo']) : ''; ?>">
+                   value="<?= htmlspecialchars($annuncio['titolo'] ?? '') ?>">
             <div id="custom_results"></div>
-
-            <script>
-                function get_libri() {
-                    let cerca = document.getElementById('search').value;
-                    let lista = document.getElementById('lista_libri');
-                    let hiddenInput = document.getElementById('id_libro_hidden');
-                    let container = document.getElementById('custom_results');
-
-                    if (cerca == "") {
-                        hiddenInput.value = "";
-                        container.style.display = 'none';
-                        return;
-                    }
-
-                    fetch("libri.php?get_libri&testo=" + cerca)
-                    .then(res => res.json())
-                    .then(data => {
-                        container.innerHTML = "";
-                        if (data.length > 0) {
-                            container.style.display = 'block';
-                            data.forEach(riga => {
-                                let option = document.createElement('option');
-                                option.value = riga.titolo;
-                                option.setAttribute('data-id', riga.id_libro);
-                                lista.appendChild(option);
-
-                                let item = document.createElement('div');
-                                let titolo = riga.titolo || riga.Titolo;
-                                let id = riga.id_libro || riga.ID_Libro;
-                                item.innerText = titolo;
-                                item.onclick = function() {
-                                    document.getElementById('search').value = titolo;
-                                    hiddenInput.value = id;
-                                    // NOTA: non resettare a "" qui nell'update se l'utente sta solo scrivendo,
-                                    // o rischi di svuotare l'ID precedente mentre digita.
-                                    container.style.display = 'none';
-                                };
-                                container.appendChild(item);
-                            });
-
-                            let opzioneTrovata = Array.from(lista.options).find(opt => opt.value === cerca);
-                            if (opzioneTrovata) {
-                                hiddenInput.value = opzioneTrovata.getAttribute('data-id');
-                            }
-                        } else {
-                            container.style.display = 'none';
-                        }
-                    });
-                }
-            </script>
         </div>
 
+        <!-- ISBN (readonly, si popola automaticamente) -->
+        <div style="margin-bottom:1.5rem;">
+            <label>ISBN</label>
+            <input type="text" id="isbn_input" readonly
+                   placeholder="Seleziona un libro per vedere l'ISBN"
+                   value="<?= htmlspecialchars($annuncio['ISBN'] ?? '') ?>">
+        </div>
+
+        <!-- PREZZO + LUOGO -->
         <div class="form-grid">
             <div>
-                <label for="prezzo_vendita">Prezzo (€)</label>
-                <input type="number" step="0.01" name="prezzo_vendita" id="prezzo_vendita"
-                       value="<?php echo $annuncio['prezzo_vendita']; ?>" required>
+                <label>Prezzo (€)</label>
+                <input type="number" step="0.01" name="prezzo_vendita"
+                       min="0.01" max="200"
+                       value="<?= $annuncio['prezzo_vendita'] ?>" required>
             </div>
             <div>
-                <label for="luogo">Luogo</label>
-                <input type="text" name="luogo" id="luogo"
-                       value="<?php echo htmlspecialchars($annuncio['luogo']); ?>" required>
+                <label>Luogo</label>
+                <input type="text" name="luogo"
+                       value="<?= htmlspecialchars($annuncio['luogo']) ?>" required>
             </div>
         </div>
 
-        <div style="margin-bottom: 1.5rem;">
-            <label for="ora">Ora</label>
-            <input type="time" name="ora" id="ora"
-                   value="<?php echo $annuncio['ora']; ?>" required>
+        <!-- DATA + ORA -->
+        <div class="form-grid">
+            <div>
+                <label>Data incontro</label>
+                <input type="date" name="data"
+                       value="<?= htmlspecialchars($annuncio['data'] ?? '') ?>" required>
+            </div>
+            <div>
+                <label>Ora</label>
+                <input type="time" name="ora"
+                       value="<?= htmlspecialchars($annuncio['ora']) ?>" required>
+            </div>
         </div>
 
-        <div style="margin-bottom: 1.5rem;">
+        <!-- CONDIZIONI -->
+        <div style="margin-bottom:1.5rem;">
             <label>Condizioni del libro</label>
             <div class="select-custom-wrapper" id="condizioniWrapper">
                 <div class="select-trigger" onclick="toggleCondizioni()">
-                    <span id="selectedCondizione"><?php echo $condizioneAttuale; ?></span>
-                    <span style="font-size: 10px; color: #9c6b3c;">▼</span>
+                    <span id="selectedCondizione"><?= htmlspecialchars($condizioneAttuale) ?></span>
+                    <span style="font-size:10px;color:#9c6b3c;">▼</span>
                 </div>
                 <div class="select-options-cond" id="condizioniOptions">
-                    <div onclick="selectCondizione('Nuovo (Mai aperto)', 'Nuovo')">Nuovo (Mai aperto)</div>
-                    <div onclick="selectCondizione('Ottime condizioni', 'Ottime')">Ottime condizioni</div>
-                    <div onclick="selectCondizione('Buone condizioni', 'Buone')">Buone condizioni</div>
-                    <div onclick="selectCondizione('Usato / Rovinato', 'Usato')">Usato / Rovinato</div>
+                    <div onclick="selectCondizione('Nuovo (Mai aperto)')">Nuovo (Mai aperto)</div>
+                    <div onclick="selectCondizione('Ottime condizioni')">Ottime condizioni</div>
+                    <div onclick="selectCondizione('Buone condizioni')">Buone condizioni</div>
+                    <div onclick="selectCondizione('Usato / Rovinato')">Usato / Rovinato</div>
                 </div>
             </div>
         </div>
 
-        <div style="margin-bottom: 1.5rem;">
+        <!-- STATO -->
+        <div style="margin-bottom:1.5rem;">
             <label>Stato Annuncio</label>
-            <div class="select-stato-wrapper" id="statoWrapper">
+            <div class="select-custom-wrapper" id="statoWrapper">
                 <div class="select-trigger" onclick="toggleStato()">
-                    <span id="selectedStato"><?php echo $annuncio['stato']; ?></span>
-                    <span style="font-size: 10px; color: #9c6b3c;">▼</span>
+                    <span id="selectedStato"><?= htmlspecialchars($annuncio['stato']) ?></span>
+                    <span style="font-size:10px;color:#9c6b3c;">▼</span>
                 </div>
                 <div class="select-options-stato" id="statoOptions">
                     <div onclick="selectStato('Disponibile')">Disponibile</div>
@@ -309,37 +245,76 @@ $condizioneAttuale = $condizioniMap[$annuncio['condizioni']] ?? 'Nuovo (Mai aper
 </div>
 
 <script>
-    function toggleCondizioni() {
-        const o = document.getElementById('condizioniOptions');
-        o.style.display = o.style.display === 'block' ? 'none' : 'block';
+    // ── Ricerca libro con ISBN automatico ──
+    function get_libri() {
+        let cerca = document.getElementById('search').value;
+        let hiddenId   = document.getElementById('id_libro_hidden');
+        let isbnInput  = document.getElementById('isbn_input');
+        let container  = document.getElementById('custom_results');
+
+        if (cerca === '') {
+            hiddenId.value = '';
+            isbnInput.value = '';
+            container.style.display = 'none';
+            return;
+        }
+
+        fetch('libri.php?get_libri&testo=' + encodeURIComponent(cerca))
+        .then(res => res.json())
+        .then(data => {
+            container.innerHTML = '';
+            if (data.length > 0) {
+                container.style.display = 'block';
+                data.forEach(riga => {
+                    let titolo = riga.titolo || riga.Titolo;
+                    let id     = riga.id_libro || riga.ID_Libro;
+                    let isbn   = riga.ISBN || riga.isbn || '';
+
+                    let item = document.createElement('div');
+                    item.innerText = titolo;
+                    item.onclick = function() {
+                        document.getElementById('search').value = titolo;
+                        hiddenId.value  = id;
+                        isbnInput.value = isbn;
+                        container.style.display = 'none';
+                    };
+                    container.appendChild(item);
+                });
+            } else {
+                container.style.display = 'none';
+            }
+        });
     }
 
-    function selectCondizione(label, valore) {
-        document.getElementById('selectedCondizione').innerText = label;
+    // ── Condizioni ──
+    function toggleCondizioni() {
+        let o = document.getElementById('condizioniOptions');
+        o.style.display = o.style.display === 'block' ? 'none' : 'block';
+    }
+    function selectCondizione(valore) {
+        document.getElementById('selectedCondizione').innerText = valore;
         document.getElementById('condizioni_hidden').value = valore;
         document.getElementById('condizioniOptions').style.display = 'none';
     }
 
+    // ── Stato ──
     function toggleStato() {
-        const o = document.getElementById('statoOptions');
+        let o = document.getElementById('statoOptions');
         o.style.display = o.style.display === 'block' ? 'none' : 'block';
     }
-
     function selectStato(valore) {
         document.getElementById('selectedStato').innerText = valore;
         document.getElementById('stato_hidden').value = valore;
         document.getElementById('statoOptions').style.display = 'none';
     }
 
+    // Chiudi dropdown cliccando fuori
     document.addEventListener('click', function(e) {
-        if (!document.getElementById('search').contains(e.target)) {
+        if (!document.getElementById('search').contains(e.target))
             document.getElementById('custom_results').style.display = 'none';
-        }
-        if (!document.getElementById('condizioniWrapper').contains(e.target)) {
+        if (!document.getElementById('condizioniWrapper').contains(e.target))
             document.getElementById('condizioniOptions').style.display = 'none';
-        }
-        if (!document.getElementById('statoWrapper').contains(e.target)) {
+        if (!document.getElementById('statoWrapper').contains(e.target))
             document.getElementById('statoOptions').style.display = 'none';
-        }
     });
 </script>

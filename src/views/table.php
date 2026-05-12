@@ -313,7 +313,7 @@
              data-ora="<?= htmlspecialchars($a['ora'] ?? '') ?>"
              data-luogo="<?= htmlspecialchars($a['luogo'] ?? '') ?>"
              data-stato="<?= htmlspecialchars($a['stato'] ?? 'Disponibile') ?>"
-             data-immagini="<?= htmlspecialchars($a['links'] ?? '') ?>"
+             data-immagini="<?= htmlspecialchars($a['immagini'] ?? '') ?>"
              onclick="apriModal(this)">
 
             <?php if (isset($_SESSION['id_utente'])): ?>
@@ -324,7 +324,7 @@
 
             <?php 
                 // Prendiamo la prima immagine del gruppo (se esiste)
-                $links = !empty($a['links']) ? explode(',', $a['links']) : [];
+                $links = !empty($a['immagini']) ? explode(',', $a['immagini']) : [];
                 $img1 = !empty($links) ? $links[0] : null;
             ?>
 

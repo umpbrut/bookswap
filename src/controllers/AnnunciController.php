@@ -65,6 +65,12 @@ class AnnunciController{
         $condizioni     = trim($_POST['condizioni']);
         $id_libro       = trim($_POST['id_libro']);
 
+        // Controllo server-side: prezzo non può superare 200
+        if (!is_numeric($prezzo_vendita) || $prezzo_vendita <= 0 || $prezzo_vendita > 200) {
+            header('location: index.php?page=annunci&action=create&errore=prezzo');
+            exit;
+        }
+
         $param = [$prezzo_vendita, $data, $ora, $luogo, $id_creatore, $id_libro, $condizioni];
         $id_annuncio = $this->model->insertRecord($param);
 
@@ -74,14 +80,18 @@ class AnnunciController{
             $count    = count($files['name']);
             $caricati = 0;
 
+            // Crea la cartella se non esiste ancora
+            // if (!is_dir(IMG_DIR)) {
+            //     mkdir(IMG_DIR, 0775, true);
+            // }
+
             for ($i = 0; $i < $count && $caricati < 3; $i++) {
                 if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;
 
                 $tmp = $files['tmp_name'][$i];
                 $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
 
-                // Nome univoco per evitare collisioni
-                $nomeFile    = 'annuncio_' . $id_annuncio . '_' . time() . '_' . $i . '.' . $ext;
+                $nomeFile     = 'annuncio_' . $id_annuncio . '_' . time() . '_' . $i . '.' . $ext;
                 $destinazione = IMG_DIR . $nomeFile;
 
                 if (move_uploaded_file($tmp, $destinazione)) {
@@ -118,6 +128,7 @@ class AnnunciController{
 
     public function edit(){
         $prezzo_vendita = trim($_POST['prezzo_vendita']);
+        $data           = trim($_POST['data']);
         $ora            = trim($_POST['ora']);
         $luogo          = trim($_POST['luogo']);
         $condizioni     = trim($_POST['condizioni']);
@@ -125,10 +136,15 @@ class AnnunciController{
         $stato          = trim($_POST['stato']);
         $id_annuncio    = trim($_POST['id_annuncio']);
 
-        $param=[$prezzo_vendita, $ora, $luogo, $condizioni, $id_libro, $stato, $id_annuncio];
+        if (!is_numeric($prezzo_vendita) || $prezzo_vendita <= 0 || $prezzo_vendita > 200) {
+            header('location: index.php?page=annunci&action=personal');
+            exit;
+        }
+
+        $param = [$prezzo_vendita, $data, $ora, $luogo, $condizioni, $id_libro, $stato, $id_annuncio];
         $this->model->updateRecord($param);
 
-        header('location:index.php');
+        header('location:index.php?page=annunci&action=personal');
         exit;
     }
 }
