@@ -188,7 +188,7 @@
         <div class="form-grid">
             <div>
                 <label>Prezzo (€)</label>
-                <input type="number" step="0.01" name="prezzo_vendita" id="prezzoInput" value="0.00" min="0" required>
+                <input type="number" step="0.01" name="prezzo_vendita" id="prezzoInput" placeholder="es. 12.50" min="0.01" max="200.00" required>
             </div>
             <div>
                 <label>Luogo di Scambio</label>
