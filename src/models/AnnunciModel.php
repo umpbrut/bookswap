@@ -48,13 +48,23 @@ class AnnunciModel{
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function insertRecord(array $param) : bool{
+    // Modificato: ora ritorna l'id dell'annuncio appena inserito
+    public function insertRecord(array $param) : int|false {
         $dml="INSERT INTO Annunci(`prezzo_vendita`,`data`,`ora`,`luogo`,`id_creatore`,`id_libro`,`condizioni`)
         VALUES(?,?,?,?,?,?,?)";
 
         $stm = $this->pdo->prepare($dml);
         $stm->execute($param);
 
+        if ($stm->rowCount() === 0) return false;
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    // Nuovo: salva il link dell'immagine collegato all'annuncio
+    public function insertImmagine(array $param) : bool {
+        $dml = "INSERT INTO Immagini(`link`, `id_annuncio`) VALUES(?, ?)";
+        $stm = $this->pdo->prepare($dml);
+        $stm->execute($param);
         return $stm->rowCount() !== 0;
     }
 

@@ -65,6 +65,7 @@
         box-shadow: var(--shadow);
         transition: transform 0.3s, box-shadow 0.3s;
         position: relative;
+        cursor: pointer;
     }
     .book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(60,40,20,0.14); }
     .heart-link {
@@ -98,6 +99,134 @@
     }
     .empty { text-align: center; padding: 60px; color: var(--muted); font-size: 0.9rem; grid-column: 1/-1; }
     .nessun-risultato { display: none; text-align: center; padding: 60px; color: var(--muted); font-size: 0.9rem; grid-column: 1/-1; }
+
+    /* ===================== MODAL ===================== */
+    .modal-overlay {
+        display: none;
+        position: fixed; inset: 0; z-index: 2000;
+        background: rgba(30,18,8,0.72);
+        backdrop-filter: blur(4px);
+        align-items: center; justify-content: center;
+        padding: 20px;
+    }
+    .modal-overlay.aperta { display: flex; }
+
+    .modal-box {
+        background: var(--bg);
+        border-radius: 14px;
+        max-width: 860px; width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 32px 80px rgba(30,18,8,0.35);
+        display: flex; flex-direction: column;
+        animation: modalIn 0.28s cubic-bezier(.22,.68,0,1.2);
+    }
+    @keyframes modalIn {
+        from { opacity: 0; transform: translateY(28px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+    @media (max-width: 620px) {
+        .modal-inner { grid-template-columns: 1fr; }
+    }
+
+    /* Colonna sinistra: galleria */
+    .modal-gallery {
+        padding: 28px 20px 28px 28px;
+        display: flex; flex-direction: column; gap: 10px;
+    }
+    .gallery-main {
+        width: 100%; aspect-ratio: 3/4;
+        background: linear-gradient(135deg, var(--bg2), var(--bg3));
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Cormorant Garamond', serif; font-size: 5rem;
+        color: var(--gold); opacity: 0.5;
+        overflow: hidden; position: relative;
+        flex-shrink: 0;
+    }
+    .gallery-arrow {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        background: rgba(255,255,255,0.88);
+        border: 1px solid var(--border);
+        border-radius: 50%; width: 36px; height: 36px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: 18px; color: var(--gold);
+        transition: background 0.2s;
+        z-index: 5; user-select: none;
+    }
+    .gallery-arrow:hover { background: white; }
+    .gallery-arrow.prev { left: 10px; }
+    .gallery-arrow.next { right: 10px; }
+
+    .gallery-thumbs {
+        display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .gallery-thumb {
+        width: calc(33.33% - 6px); aspect-ratio: 1/1;
+        background: linear-gradient(135deg, var(--bg2), var(--bg3));
+        border-radius: 7px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Cormorant Garamond', serif; font-size: 1.6rem;
+        color: var(--gold); opacity: 0.45;
+        cursor: pointer; border: 2px solid transparent;
+        transition: border-color 0.2s, opacity 0.2s;
+        overflow: hidden;
+    }
+    .gallery-thumb.attiva { border-color: var(--gold); opacity: 1; }
+    .gallery-thumb:hover { opacity: 0.85; }
+
+    /* Colonna destra: dettagli */
+    .modal-dettagli {
+        padding: 28px 28px 28px 20px;
+        display: flex; flex-direction: column; gap: 0;
+        border-left: 1px solid var(--border);
+    }
+    .modal-chiudi {
+        align-self: flex-end;
+        background: none; border: none; cursor: pointer;
+        font-size: 1.4rem; color: var(--muted);
+        line-height: 1; padding: 0 0 16px 0;
+        transition: color 0.2s;
+    }
+    .modal-chiudi:hover { color: var(--gold); }
+    .modal-materia { font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+    .modal-titolo {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.75rem; font-weight: 400; line-height: 1.25;
+        margin-bottom: 4px;
+    }
+    .modal-autore { font-size: 0.82rem; color: var(--muted); margin-bottom: 24px; }
+    .modal-divider { height: 1px; background: var(--border); margin: 0 0 20px; }
+    .modal-info-riga {
+        display: flex; align-items: baseline; justify-content: space-between;
+        margin-bottom: 14px;
+    }
+    .modal-info-label { font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+    .modal-info-val { font-size: 0.92rem; color: var(--ink); font-weight: 500; text-align: right; }
+    .modal-prezzo-big { font-size: 2rem; font-weight: 600; color: var(--gold); margin: 20px 0 8px; }
+    .modal-cond-badge {
+        display: inline-block;
+        font-size: 0.62rem; letter-spacing: 1.5px; text-transform: uppercase;
+        padding: 5px 14px; border-radius: 20px;
+        background: var(--bg2); color: var(--muted); border: 1px solid var(--border);
+        margin-bottom: 28px;
+    }
+    .modal-btn-preferiti {
+        display: block; width: 100%;
+        padding: 13px; background: var(--gold); color: white;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase;
+        text-align: center; text-decoration: none; border-radius: 6px;
+        transition: background 0.2s; margin-top: auto;
+    }
+    .modal-btn-preferiti:hover { background: var(--gold2); }
+    .modal-btn-preferiti.nascosto { display: none; }
 </style>
 
 <!-- RICERCA TESTO (JS, filtra le card già in pagina) -->
@@ -112,7 +241,6 @@
     I valori rimangono selezionati dopo il submit grazie a $_GET['materia'] ecc.
 -->
 <form class="filtri-form" method="GET" action="index.php">
-    <!-- Parametri nascosti per il router -->
     <input type="hidden" name="page" value="annunci">
     <input type="hidden" name="action" value="index">
 
@@ -126,7 +254,7 @@
                 <?= htmlspecialchars($m['nome']) ?>
             </option>
             <?php endforeach; ?>
-    </select>
+        </select>
     </div>
 
     <div>
@@ -164,7 +292,6 @@
     </div>
 
     <button type="submit" class="btn-filtra">Filtra</button>
-    <!-- Azzera = torna all'index senza parametri -->
     <a href="index.php?page=annunci&action=index" class="btn-azzera">Azzera</a>
 </form>
 
@@ -174,11 +301,24 @@
         <?php foreach ($table as $a): ?>
         <div class="book-card"
              data-titolo="<?= htmlspecialchars(strtolower($a['titolo'] ?? '')) ?>"
-             data-autore="<?= htmlspecialchars(strtolower($a['autore'] ?? '')) ?>">
+             data-autore="<?= htmlspecialchars(strtolower($a['autore'] ?? '')) ?>"
+             data-id="<?= $a['id_annuncio'] ?>"
+             data-id-libro="<?= $a['id_libro'] ?>"
+             data-materia="<?= htmlspecialchars($a['materia'] ?? '') ?>"
+             data-titolo-full="<?= htmlspecialchars($a['titolo'] ?? '') ?>"
+             data-autore-full="<?= htmlspecialchars($a['autore'] ?? '') ?>"
+             data-prezzo="<?= number_format($a['prezzo_vendita'] ?? 0, 2, ',', '.') ?>"
+             data-condizioni="<?= htmlspecialchars($a['condizioni'] ?? '') ?>"
+             data-data="<?= htmlspecialchars($a['data'] ?? '') ?>"
+             data-ora="<?= htmlspecialchars($a['ora'] ?? '') ?>"
+             data-luogo="<?= htmlspecialchars($a['luogo'] ?? '') ?>"
+             data-stato="<?= htmlspecialchars($a['stato'] ?? 'Disponibile') ?>"
+             onclick="apriModal(this)">
 
             <?php if (isset($_SESSION['id_utente'])): ?>
             <a href="index.php?page=preferiti&action=store&id_annuncio=<?= $a['id_annuncio'] ?>"
-               class="heart-link" title="Aggiungi ai preferiti">❤️</a>
+               class="heart-link" title="Aggiungi ai preferiti"
+               onclick="event.stopPropagation()">❤️</a>
             <?php endif; ?>
 
             <div class="card-img-placeholder">&#9413;</div>
@@ -201,8 +341,66 @@
     <?php endif; ?>
 </div>
 
+<!-- ==================== MODAL DETTAGLIO ==================== -->
+<div class="modal-overlay" id="modal-overlay" onclick="chiudiSeOverlay(event)">
+    <div class="modal-box" role="dialog" aria-modal="true">
+        <div class="modal-inner">
+
+            <!-- GALLERIA: 1 immagine grande + 3 thumbnails sotto -->
+            <div class="modal-gallery">
+                <div class="gallery-main" id="modal-img-main">
+                    <button class="gallery-arrow prev" onclick="cambiaImmagine(-1)">&#8249;</button>
+                    <span id="modal-placeholder-icon">&#9413;</span>
+                    <button class="gallery-arrow next" onclick="cambiaImmagine(1)">&#8250;</button>
+                </div>
+                <div class="gallery-thumbs" id="gallery-thumbs">
+                    <div class="gallery-thumb attiva" onclick="selezionaThumb(0)">&#9413;</div>
+                    <div class="gallery-thumb" onclick="selezionaThumb(1)">&#9413;</div>
+                    <div class="gallery-thumb" onclick="selezionaThumb(2)">&#9413;</div>
+                </div>
+            </div>
+
+            <!-- DETTAGLI -->
+            <div class="modal-dettagli">
+                <button class="modal-chiudi" onclick="chiudiModal()" aria-label="Chiudi">&#10005;</button>
+
+                <p class="modal-materia" id="modal-materia"></p>
+                <h2 class="modal-titolo" id="modal-titolo"></h2>
+                <p class="modal-autore" id="modal-autore"></p>
+
+                <div class="modal-divider"></div>
+
+                <div class="modal-info-riga">
+                    <span class="modal-info-label">Stato annuncio</span>
+                    <span class="modal-info-val" id="modal-stato"></span>
+                </div>
+                <div class="modal-info-riga">
+                    <span class="modal-info-label">Data incontro</span>
+                    <span class="modal-info-val" id="modal-data"></span>
+                </div>
+                <div class="modal-info-riga">
+                    <span class="modal-info-label">Ora</span>
+                    <span class="modal-info-val" id="modal-ora"></span>
+                </div>
+                <div class="modal-info-riga">
+                    <span class="modal-info-label">Luogo</span>
+                    <span class="modal-info-val" id="modal-luogo"></span>
+                </div>
+
+                <div class="modal-divider"></div>
+
+                <div class="modal-prezzo-big" id="modal-prezzo"></div>
+                <span class="modal-cond-badge" id="modal-condizioni"></span>
+
+                <a href="#" class="modal-btn-preferiti" id="modal-btn-preferiti">&#10084;&#65039; Aggiungi ai preferiti</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <script>
-    /* Ricerca testo: filtra le card già presenti in pagina mentre scrivi */
+    /* ---- Ricerca testo: logica originale invariata ---- */
     function filtra() {
         let cerca = document.getElementById('search').value.toLowerCase();
         let cards = document.querySelectorAll('.book-card');
@@ -220,4 +418,72 @@
         let msg = document.getElementById('nessun-risultato');
         if (msg) msg.style.display = trovati === 0 ? 'block' : 'none';
     }
+
+    /* ---- Modal ---- */
+    let immagineCorrente = 0;
+    const NUM_IMMAGINI = 3; // In futuro si potrebbe passare dal DB
+
+    function apriModal(card) {
+        // Popola i campi con i data-attribute della card
+        document.getElementById('modal-materia').textContent    = card.dataset.materia    || '';
+        document.getElementById('modal-titolo').textContent     = card.dataset.titoloFull || '';
+        document.getElementById('modal-autore').textContent     = card.dataset.autoreFull || '';
+        document.getElementById('modal-prezzo').textContent     = 'EUR ' + card.dataset.prezzo;
+        document.getElementById('modal-condizioni').textContent = card.dataset.condizioni  || '';
+        document.getElementById('modal-stato').textContent      = card.dataset.stato       || 'Disponibile';
+        document.getElementById('modal-data').textContent       = card.dataset.data        || '—';
+        document.getElementById('modal-ora').textContent        = card.dataset.ora         || '—';
+        document.getElementById('modal-luogo').textContent      = card.dataset.luogo       || '—';
+
+        // Bottone preferiti: visibile solo se utente loggato
+        let btnPref = document.getElementById('modal-btn-preferiti');
+        let sessione = <?= isset($_SESSION['id_utente']) ? 'true' : 'false' ?>;
+        if (sessione) {
+            btnPref.classList.remove('nascosto');
+            btnPref.href = 'index.php?page=preferiti&action=store&id_annuncio=' + card.dataset.id;
+        } else {
+            btnPref.classList.add('nascosto');
+        }
+
+        // Reset galleria
+        immagineCorrente = 0;
+        aggiornaGalleria();
+
+        document.getElementById('modal-overlay').classList.add('aperta');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function chiudiModal() {
+        document.getElementById('modal-overlay').classList.remove('aperta');
+        document.body.style.overflow = '';
+    }
+
+    function chiudiSeOverlay(e) {
+        if (e.target === document.getElementById('modal-overlay')) chiudiModal();
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') chiudiModal();
+    });
+
+    function cambiaImmagine(dir) {
+        immagineCorrente = (immagineCorrente + dir + NUM_IMMAGINI) % NUM_IMMAGINI;
+        aggiornaGalleria();
+    }
+
+    function selezionaThumb(idx) {
+        immagineCorrente = idx;
+        aggiornaGalleria();
+    }
+
+    function aggiornaGalleria() {
+        // Evidenzia thumbnail attiva
+        document.querySelectorAll('.gallery-thumb').forEach(function(t, i) {
+            t.classList.toggle('attiva', i === immagineCorrente);
+        });
+        // Qui in futuro si aggiorna l'immagine principale se ci sono URL reali
+    }
 </script>
+
+<!-- i data-attribute sulla card servono solo a passare i dati già caricati dal DB alla modal via JavaScript — 
+ non c'è nessuna chiamata aggiuntiva al server, i dati vengono dal $table che il controller già fornisce. -->
