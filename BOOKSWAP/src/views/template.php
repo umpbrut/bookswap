@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookSwap | ISIT Books</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg:     #faf8f5;
@@ -18,9 +19,10 @@
             --border: rgba(156,107,60,0.18);
             --shadow: 0 2px 20px rgba(60,40,20,0.08);
         }
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); }
+        body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--ink); }
 
         /* HEADER */
         header {
@@ -31,20 +33,25 @@
             backdrop-filter: blur(16px);
             border-bottom: 0.5px solid var(--border);
         }
+
         .logo {
             font-family: 'Cormorant Garamond', serif;
             font-size: 1.5rem; font-weight: 600;
             letter-spacing: 4px; text-transform: uppercase;
             color: var(--gold); text-decoration: none;
         }
+
         nav { display: flex; gap: 28px; align-items: center; }
+
         nav a {
+            font-family: 'DM Sans', sans-serif;
             color: var(--muted); text-decoration: none;
             font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
             transition: color 0.3s; padding: 6px 0;
             border-bottom: 1.5px solid transparent;
         }
         nav a:hover, nav a.active { color: var(--gold); border-bottom-color: var(--gold); }
+
         .nav-btn {
             padding: 8px 20px !important;
             background: var(--gold) !important; color: white !important;
@@ -68,18 +75,29 @@
             animation: zoom 20s ease-in-out infinite alternate;
         }
         @keyframes zoom { from { transform: scale(1.04); } to { transform: scale(1.10); } }
+
         .hero-content { position: relative; z-index: 2; max-width: 740px; }
-        .hero-label { font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 28px; }
+
+        .hero-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.65rem; letter-spacing: 4px;
+            text-transform: uppercase; color: var(--gold); margin-bottom: 28px;
+        }
         .hero-title {
             font-family: 'Cormorant Garamond', serif;
             font-size: clamp(2.4rem, 5.5vw, 4.2rem);
             font-weight: 300; font-style: italic; line-height: 1.22; color: var(--ink);
         }
         .hero-title em { color: var(--gold); }
-        .hero-attr { margin-top: 16px; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+        .hero-attr {
+            font-family: 'Lato', sans-serif;
+            margin-top: 16px; font-size: 0.72rem;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+        }
         .hero-cta {
             display: inline-block; margin-top: 48px; padding: 14px 44px;
             background: var(--gold); color: white; text-decoration: none;
+            font-family: 'DM Sans', sans-serif;
             font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
             border-radius: 3px; transition: background 0.3s;
         }
@@ -88,54 +106,73 @@
         /* LAYOUT */
         main { padding-top: 80px; }
         section { max-width: 1200px; margin: 0 auto; padding: 60px 40px; }
-        .eyebrow { font-size: 0.62rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+
+        .eyebrow {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.62rem; letter-spacing: 4px;
+            text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+        }
         h2.section-title {
             font-family: 'Cormorant Garamond', serif;
             font-size: clamp(1.8rem, 3.5vw, 2.8rem);
             font-weight: 300; margin-bottom: 32px;
         }
 
+        /* Centratura Ricerca e Filtri */
+        section.text-center form, 
+        section.text-center .row {
+            justify-content: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        section.text-center input, 
+        section.text-center select {
+            margin: 0 auto;
+        }
+
         /* FOOTER */
         footer {
             border-top: 1px solid var(--border); padding: 24px 40px;
             display: flex; justify-content: space-between; align-items: center;
+            font-family: 'Lato', sans-serif;
             font-size: 0.7rem; color: var(--muted); background: white;
         }
     </style>
 </head>
 <body>
 
+<?php
+$action = $_GET['action'] ?? 'index';
+$page   = $_GET['page']   ?? 'annunci';
+?>
+
 <header>
     <a href="index.php?page=annunci" class="logo">BookSwap</a>
     <nav>
         <a href="index.php?page=annunci"
-           <?= (!isset($_GET['action']) || $_GET['action'] === 'index') && ($_GET['page'] ?? '') === 'annunci' ? 'class="active"' : '' ?>>
+           <?= ($page === 'annunci' && $action === 'index') ? 'class="active"' : '' ?>>
             Annunci
         </a>
         <a href="index.php?page=annunci&action=personal"
-           <?= (($_GET['action'] ?? '') === 'personal') ? 'class="active"' : '' ?>>
+           <?= ($page === 'annunci' && $action === 'personal') ? 'class="active"' : '' ?>>
             I miei annunci
         </a>
         <?php if (isset($_SESSION['id_utente'])): ?>
         <a href="index.php?page=annunci&action=create" class="nav-btn">+ Nuovo</a>
         <?php endif; ?>
         <a href="index.php?page=preferiti&action=index"
-           <?= (($_GET['page'] ?? '') === 'preferiti') ? 'class="active"' : '' ?>>
+           <?= ($page === 'preferiti') ? 'class="active"' : '' ?>>
             Preferiti
         </a>
         <a href="index.php?page=personal&action=index"
-           <?= (($_GET['page'] ?? '') === 'personal') ? 'class="active"' : '' ?>>
+           <?= ($page === 'personal') ? 'class="active"' : '' ?>>
             Profilo
         </a>
     </nav>
 </header>
 
-<?php
-$action = $_GET['action'] ?? 'index';
-$page   = $_GET['page']   ?? 'annunci';
-?>
-
-<?php /* Hero: solo nella pagina annunci index, non su preferiti, personal, create ecc. */ ?>
 <?php if ($page === 'annunci' && $action === 'index'): ?>
 <div class="hero">
     <div class="hero-bg"></div>
@@ -149,27 +186,34 @@ $page   = $_GET['page']   ?? 'annunci';
 <?php endif; ?>
 
 <main>
-    <?php if (($page === 'annunci' ||$page === 'preferiti')  && ($action === 'index')): ?>
-        <?php /* Titolo sezione e griglia annunci — solo nella index */ ?>
+
+    <?php if ($page === 'annunci' && $action === 'index'): ?>
         <div id="annunci"></div>
-        <section>
+        <section class="text-center">
             <p class="eyebrow">Libri disponibili</p>
             <h2 class="section-title">Annunci recenti</h2>
+            <!-- Il contenuto di table.php verrà ora centrato dal CSS aggiunto sopra -->
             <?php include 'table.php'; ?>
         </section>
 
     <?php elseif ($page === 'annunci' && $action === 'personal'): ?>
-        <?php /* Titolo sezione e griglia annunci personali */ ?>
-        <section>
+        <section class="text-center">
             <p class="eyebrow">Area personale</p>
             <h2 class="section-title">I miei annunci</h2>
             <?php include 'table_personal.php'; ?>
         </section>
 
+    <?php elseif ($page === 'preferiti' && $action === 'index'): ?>
+        <section class="text-center">
+            <p class="eyebrow">La tua libreria</p>
+            <h2 class="section-title">I miei preferiti</h2>
+            <?php include 'table_preferiti.php'; ?>
+        </section>
+
     <?php endif; ?>
 
-    <?php /* Form create, update, e viste di altre pagine (preferiti, profilo ecc.) */ ?>
     <?php if (!empty($view)) include $view; ?>
+
 </main>
 
 <footer>

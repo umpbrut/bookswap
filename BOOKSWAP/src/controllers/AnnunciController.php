@@ -18,8 +18,27 @@ class AnnunciController{
             exit;
         }
     }
-    public function index(){
-        $table = $this->model->selectAll();
+    // public function index(){
+    //     $table = $this->model->selectAll();
+    //     include 'views/template.php';
+    // }
+
+    public function index() {
+        $materie = $this->model->selectMaterie();
+
+        $filtri = array_filter([
+            'id_materia' => $_GET['id_materia'] ?? '',
+            'condizioni' => $_GET['condizioni'] ?? '',
+            'prezzo_max' => $_GET['prezzo_max'] ?? '',
+        ]);
+
+        if (!empty($filtri)) {
+            $table = $this->model->selectByFiltri($filtri);
+        }
+        else{
+            $table = $this->model->selectAll();
+        }
+
         include 'views/template.php';
     }
 

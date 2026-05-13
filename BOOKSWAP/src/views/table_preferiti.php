@@ -56,18 +56,15 @@
         background: var(--bg2); color: var(--muted); border: 1px solid var(--border);
     }
 
-    .card-actions { display: flex; gap: 8px; padding: 0 18px 18px; }
-
-    .btn-modifica, .btn-elimina {
-        flex: 1; padding: 9px; border-radius: 5px;
+    .btn-rimuovi {
+        display: block; width: 100%;
+        padding: 10px; background: #c0392b; color: white;
         font-family: 'DM Sans', sans-serif;
         font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
         text-align: center; text-decoration: none;
-        border: none; cursor: pointer; transition: opacity 0.2s;
+        transition: opacity 0.2s;
     }
-    .btn-modifica { background: var(--gold); color: white; }
-    .btn-elimina  { background: #c0392b; color: white; }
-    .btn-modifica:hover, .btn-elimina:hover { opacity: 0.85; }
+    .btn-rimuovi:hover { opacity: 0.85; }
 
     .empty {
         font-family: 'Lato', sans-serif;
@@ -78,10 +75,6 @@
 <div class="annunci-grid">
     <?php if (!empty($table)): ?>
         <?php foreach ($table as $a): ?>
-        <?php
-            $id    = $a['id_annuncio'];
-            $libro = $a['id_libro'] ?? '';
-        ?>
         <div class="book-card">
 
             <div class="card-img-placeholder">&#9413;</div>
@@ -96,17 +89,13 @@
                 </div>
             </div>
 
-            <div class="card-actions">
-                <a href="index.php?page=annunci&action=update&id_annuncio=<?= $id ?>&id_libro=<?= $libro ?>"
-                   class="btn-modifica">✏️ Modifica</a>
-                <a href="index.php?page=annunci&action=destroy&id_annuncio=<?= $id ?>"
-                   class="btn-elimina"
-                   onclick="return confirm('Sei sicuro di voler eliminare questo annuncio?')">🗑 Elimina</a>
-            </div>
+            <a href="index.php?page=preferiti&action=store&id_annuncio=<?= $a['id_annuncio'] ?>"
+               class="btn-rimuovi"
+               onclick="return confirm('Rimuovere dai preferiti?')">🗑 Rimuovi dai preferiti</a>
 
         </div>
         <?php endforeach; ?>
     <?php else: ?>
-        <p class="empty">Non hai ancora pubblicato nessun annuncio.</p>
+        <p class="empty">Non hai ancora salvato nessun annuncio nei preferiti.</p>
     <?php endif; ?>
 </div>

@@ -77,4 +77,26 @@ class AnnunciModel{
 
         return $stm->rowCount() !== 0;
     }
+
+    public function selectByFiltri(array $param) : array {
+        $dql = "SELECT * FROM Annunci A
+                JOIN Libri L USING(id_libro)
+                WHERE L.id_materia LIKE ?
+                AND A.condizioni LIKE ?
+                AND A.prezzo_vendita <= ?";
+
+        $id_materia = !empty($param['id_materia']) ? $param['id_materia'] : '%';
+        $condizioni = !empty($param['condizioni']) ? $param['condizioni'] : '%';
+        $prezzo_max = !empty($param['prezzo_max']) ? $param['prezzo_max'] : 999999;
+
+        $stm = $this->pdo->prepare($dql);
+        $stm->execute([$id_materia, $condizioni, $prezzo_max]);
+        return $stm->fetchAll(PDO::FETCH_ASSOC);
+    }           
+
+    public function selectMaterie() : array {
+        $stm = $this->pdo->prepare("SELECT id_materia, nome FROM Materie");
+        $stm->execute();
+        return $stm->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
