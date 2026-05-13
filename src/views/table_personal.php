@@ -3,7 +3,9 @@
     .annunci-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
     .book-card { background: white; border: 1px solid rgba(60,40,20,0.08); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; height: 100%; cursor: pointer; position: relative; }
     .book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(60,40,20,0.14); }
-    .card-img-wrap { width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, var(--bg2), var(--bg3)); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--gold); opacity: 0.45; overflow: hidden; }
+    
+    /* Rimossa l'opacity per togliere la patina bianca sulle card della griglia */
+    .card-img-wrap { width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, var(--bg2), var(--bg3)); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--gold); overflow: hidden; }
     .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 1; }
     .card-body { padding: 16px 18px 20px; flex-grow: 1; }
     .card-materia { font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
@@ -27,8 +29,13 @@
     .modal-inner { display: grid; grid-template-columns: 1fr 1fr; }
     @media (max-width: 620px) { .modal-inner { grid-template-columns: 1fr; } }
     .modal-gallery { padding: 28px 20px 28px 28px; display: flex; flex-direction: column; gap: 10px; }
-    .gallery-main { width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, var(--bg2), var(--bg3)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: var(--gold); opacity: 0.5; overflow: hidden; position: relative; flex-shrink: 0; }
-    .gallery-main img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+    
+    /* Rimossa l'opacity per togliere la patina bianca dentro la modal */
+    .gallery-main { width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, var(--bg2), var(--bg3)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: var(--gold); overflow: hidden; position: relative; flex-shrink: 0; }
+    
+    /* MODIFICATO: Impostato object-fit su contain per non tagliare il libro e aggiunto sfondo scuro per i lati vuoti */
+    .gallery-main img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; background: #1a1a1a; }
+    
     .gallery-main .placeholder-icon { font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: var(--gold); opacity: 0.5; }
     .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.88); border: 1px solid var(--border); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: var(--gold); transition: background 0.2s; z-index: 5; user-select: none; }
     .gallery-arrow:hover { background: white; }
@@ -116,7 +123,6 @@
     <?php endif; ?>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay-personal" onclick="chiudiSeOverlayP(event)">
     <div class="modal-box" role="dialog" aria-modal="true">
         <div class="modal-inner">
