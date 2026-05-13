@@ -146,7 +146,7 @@
         border-radius: 10px;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Cormorant Garamond', serif; font-size: 5rem;
-        color: var(--gold); opacity: 0.5;
+        color: var(--gold);
         overflow: hidden; position: relative;
         flex-shrink: 0;
     }
@@ -508,7 +508,7 @@
             if(!imgMain) {
                 imgMain = document.createElement('img');
                 imgMain.className = 'img-fluida';
-                imgMain.style = 'width:100%; height:100%; object-fit:cover;';
+                imgMain.style = 'width:100%; height:100%; object-fit:contain;';
                 mainBox.appendChild(imgMain);
             }
             imgMain.src = elencoImmagini[immagineCorrente];
