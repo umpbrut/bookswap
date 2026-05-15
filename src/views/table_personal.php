@@ -3,8 +3,6 @@
     .annunci-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
     .book-card { background: white; border: 1px solid rgba(60,40,20,0.08); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; height: 100%; cursor: pointer; position: relative; }
     .book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(60,40,20,0.14); }
-    
-    /* Rimossa l'opacity per togliere la patina bianca sulle card della griglia */
     .card-img-wrap { width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, var(--bg2), var(--bg3)); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--gold); overflow: hidden; }
     .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 1; }
     .card-body { padding: 16px 18px 20px; flex-grow: 1; }
@@ -21,6 +19,17 @@
     .btn-modifica:hover, .btn-elimina:hover { opacity: 0.85; }
     .empty { text-align: center; padding: 60px; color: var(--muted); font-size: 0.9rem; }
 
+    /* TABELLA STORICO CONCLUSI */
+    .storico-title { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin: 36px 0 14px; }
+    .ordini-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .ordini-table th { text-align: left; padding: 10px 14px; font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .ordini-table td { padding: 14px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--ink); }
+    .ordini-table tr:last-child td { border-bottom: none; }
+    .ordini-table tr:hover td { background: var(--bg2); }
+    .badge { display: inline-block; font-size: 0.58rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); }
+    .badge-concluso { background: var(--bg2); color: var(--muted); }
+    .badge-attesa { background: #fff8e6; color: #a06000; border-color: #f0d89a; }
+
     /* MODAL */
     .modal-overlay { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(30,18,8,0.72); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.aperta { display: flex; }
@@ -29,13 +38,8 @@
     .modal-inner { display: grid; grid-template-columns: 1fr 1fr; }
     @media (max-width: 620px) { .modal-inner { grid-template-columns: 1fr; } }
     .modal-gallery { padding: 28px 20px 28px 28px; display: flex; flex-direction: column; gap: 10px; }
-    
-    /* Rimossa l'opacity per togliere la patina bianca dentro la modal */
     .gallery-main { width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, var(--bg2), var(--bg3)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: var(--gold); overflow: hidden; position: relative; flex-shrink: 0; }
-    
-    /* MODIFICATO: Impostato object-fit su contain per non tagliare il libro e aggiunto sfondo scuro per i lati vuoti */
     .gallery-main img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; background: #1a1a1a; }
-    
     .gallery-main .placeholder-icon { font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: var(--gold); opacity: 0.5; }
     .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.88); border: 1px solid var(--border); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: var(--gold); transition: background 0.2s; z-index: 5; user-select: none; }
     .gallery-arrow:hover { background: white; }
@@ -65,9 +69,17 @@
     .modal-btn-modifica:hover, .modal-btn-elimina:hover { opacity: 0.85; }
 </style>
 
+<?php
+// Solo gli annunci disponibili vanno nella griglia card
+$attivi   = array_filter($table ?? [], fn($a) => ($a['stato'] ?? '') === 'Disponibile');
+// In attesa e Concluso vanno nello storico sotto
+$conclusi = array_filter($table ?? [], fn($a) => in_array($a['stato'] ?? '', ['In attesa', 'Concluso']));
+?>
+
+<!-- GRIGLIA ANNUNCI ATTIVI -->
 <div class="annunci-grid">
-    <?php if (!empty($table)): ?>
-        <?php foreach ($table as $a):
+    <?php if (!empty($attivi)): ?>
+        <?php foreach ($attivi as $a):
             $id    = $a['id_annuncio'];
             $libro = $a['id_libro'] ?? '';
             $imgs  = !empty($a['immagini']) ? explode(',', $a['immagini']) : [];
@@ -118,10 +130,45 @@
 
         </div>
         <?php endforeach; ?>
-    <?php else: ?>
+    <?php elseif (empty($conclusi)): ?>
         <p class="empty">Non hai ancora pubblicato nessun annuncio.</p>
     <?php endif; ?>
 </div>
+
+<!-- STORICO ANNUNCI CONCLUSI -->
+<?php if (!empty($conclusi)): ?>
+<p class="storico-title">Storico annunci</p>
+<table class="ordini-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Titolo</th>
+            <th>Autore</th>
+            <th>Prezzo</th>
+            <th>Stato</th>
+            <th>Data</th>
+            <th>Luogo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($conclusi as $a): ?>
+        <tr>
+            <td style="color:var(--muted);font-size:0.8rem;"><?= $a['id_annuncio'] ?></td>
+            <td><strong><?= htmlspecialchars($a['titolo'] ?? '') ?></strong></td>
+            <td style="color:var(--muted);"><?= htmlspecialchars($a['autore'] ?? '') ?></td>
+            <td style="color:var(--gold);font-weight:500;">€ <?= number_format($a['prezzo_vendita'] ?? 0, 2, ',', '.') ?></td>
+            <?php
+            $s = $a['stato'] ?? '';
+            $cls = $s === 'Concluso' ? 'badge-concluso' : 'badge-attesa';
+            ?>
+            <td><span class="badge <?= $cls ?>"><?= htmlspecialchars($s) ?></span></td>
+            <td style="color:var(--muted);font-size:0.82rem;"><?= htmlspecialchars($a['data'] ?? '—') ?></td>
+            <td style="color:var(--muted);font-size:0.82rem;"><?= htmlspecialchars($a['luogo'] ?? '—') ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<?php endif; ?>
 
 <div class="modal-overlay" id="modal-overlay-personal" onclick="chiudiSeOverlayP(event)">
     <div class="modal-box" role="dialog" aria-modal="true">

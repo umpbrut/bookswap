@@ -57,11 +57,17 @@
     .modal-cond-badge { display: inline-block; font-size: 0.62rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; background: var(--bg2); color: var(--muted); border: 1px solid var(--border); margin-bottom: 28px; }
     .modal-btn-rimuovi { display: block; width: 100%; padding: 13px; background: #c0392b; color: white; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; text-align: center; text-decoration: none; border-radius: 6px; transition: opacity 0.2s; margin-top: auto; }
     .modal-btn-rimuovi:hover { opacity: 0.85; }
+    .modal-btn-ordina { display: block; width: 100%; padding: 13px; background: var(--ink); color: white; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; text-align: center; text-decoration: none; border-radius: 6px; transition: background 0.2s; margin-top: 10px; }
+    .modal-btn-ordina:hover { background: var(--gold); }
 </style>
 
 <div class="annunci-grid">
-    <?php if (!empty($table)): ?>
-        <?php foreach ($table as $a):
+    <?php
+    // Mostra solo annunci ancora disponibili (gli altri sono stati presi)
+    $table_disponibili = array_filter($table ?? [], fn($a) => ($a['stato'] ?? '') === 'Disponibile');
+    ?>
+    <?php if (!empty($table_disponibili)): ?>
+        <?php foreach ($table_disponibili as $a):
             $imgs     = !empty($a['immagini']) ? explode(',', $a['immagini']) : [];
             $primaImg = $imgs[0] ?? null;
         ?>
@@ -137,6 +143,8 @@
                 <span class="modal-cond-badge" id="modal-condizioni-pref"></span>
                 <a href="#" class="modal-btn-rimuovi" id="modal-btn-rimuovi"
                    onclick="return confirm('Rimuovere dai preferiti?')">&#128465; Rimuovi dai preferiti</a>
+                <a href="#" class="modal-btn-ordina" id="modal-btn-ordina-pref"
+                   onclick="return confirm('Vuoi confermare l\'ordine?')">&#128230; Ordina Libro</a>
             </div>
         </div>
     </div>
@@ -159,6 +167,9 @@
 
         document.getElementById('modal-btn-rimuovi').href =
             'index.php?page=preferiti&action=store&id_annuncio=' + card.dataset.id;
+
+        document.getElementById('modal-btn-ordina-pref').href =
+            'index.php?page=ordini&action=ordina&id_annuncio=' + card.dataset.id;
 
         imgsPref = card.dataset.immagini ? card.dataset.immagini.split(',') : [];
         imgCorrPref = 0;

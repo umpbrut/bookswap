@@ -21,6 +21,7 @@ class AnnunciModel{
                 JOIN Libri_Associazioni ON Libri_Associazioni.id_libro = Libri.id_libro
                 JOIN Materie ON Materie.id_materia = Libri_Associazioni.id_materia
                 LEFT JOIN Immagini USING(id_annuncio)
+                WHERE Annunci.stato LIKE 'Disponibile'
                 GROUP BY id_annuncio";
 
         $stm = $this->pdo->prepare($dql);

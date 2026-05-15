@@ -67,12 +67,10 @@ class LoginController {
             exit;
         }
 
-        // Estraiamo il dominio dall'email (tutto ciò che sta dopo la @)
+        // Controlliamo che il dominio sia esclusivamente isit100.fe.it
         $dominio = substr(strrchr($email, "@"), 1);
-
-        // Controlliamo se il dominio ha dei record MX (Mail Exchanger)
-        if (!checkdnsrr($dominio, "MX")) {
-            $_SESSION['error'] = "Email inesistente ❌";
+        if ($dominio !== 'isit100.fe.it') {
+            $_SESSION['error'] = "Devi usare un'email @isit100.fe.it ❌";
             header("Location: index.php?page=login&action=registration");
             exit;
         }
