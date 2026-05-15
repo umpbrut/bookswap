@@ -1,301 +1,348 @@
 <?php defined('APP') or die('Accesso Negato'); ?>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<!-- View per il form di creazione annuncio. Contiene stile, form e logica client-side. -->
 <style>
     @keyframes scrollBackground {
-        from { background-position: 0 0; }
-        to { background-position: -2000px 0; }
+        from {
+            background-position: 0 0;
+        }
+
+        to {
+            background-position: -2000px 0;
+        }
     }
 
+    /* Background scorrevole e overlay scuro per ottenere profondità senza appesantire il form. */
     body {
-        font-family: 'Lato', sans-serif;
-        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
-            url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=3000');
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=3000');
         background-size: auto 100%;
         background-repeat: repeat-x;
         min-height: 100vh;
         margin: 0;
         animation: scrollBackground 80s linear infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    footer {
+        display: none !important;
     }
 
     .annuncio-card {
-        background: #121212;
-        color: #e0e0e0;
+        background: rgba(255, 255, 255, 0.93);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        color: #1a1a1a;
+        padding: 2rem;
         border-radius: 15px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        max-width: 600px;
+        width: 100%;
+        margin: 2rem auto;
+        font-family: 'Segoe UI', sans-serif;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     }
 
     .annuncio-card h2 {
-        font-family: 'Cormorant Garamond', serif;
-        font-weight: 300;
-        font-size: 2.2rem;
-        letter-spacing: 1px;
-        color: #fff;
+        text-align: center;
+        color: #1a1a1a;
+        font-family: 'Georgia', serif;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
     }
 
-    .form-label {
-        font-family: 'DM Sans', sans-serif;
+    label {
+        display: block;
         text-transform: uppercase;
-        font-size: 0.68rem;
-        letter-spacing: 2px;
-        color: #a89880;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        color: #7a6040;
+        margin-bottom: 0.5rem;
     }
 
-    .form-control, .form-select {
-        background: #1a1a1a;
-        border: 1px solid #333;
-        color: #fff;
-        font-family: 'Lato', sans-serif;
-        font-size: 0.9rem;
+    input {
+        width: 100%;
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+        color: #1a1a1a;
+        padding: 12px;
         border-radius: 8px;
+        box-sizing: border-box;
     }
 
-    .form-control:focus, .form-select:focus {
-        background: #1a1a1a;
-        border-color: #9c6b3c;
-        color: #fff;
-        box-shadow: 0 0 0 3px rgba(156,107,60,0.2);
+    .search-container {
+        position: relative;
     }
 
-    .form-control::placeholder { color: #555; }
-
-    /* dropdown risultati ricerca libro */
+    /* Box dei risultati dell'autocomplete: posizionato sotto il campo e nascosto finché non serve. */
     #custom_results {
         position: absolute;
-        top: calc(100% + 6px);
+        top: calc(100% + 10px);
         left: 0;
         width: 100%;
         background: white;
         border-radius: 8px;
         z-index: 1000;
         display: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        border: 1px solid #ddd;
     }
 
+    /* Freccia del tooltip che collega visivamente il dropdown al campo di ricerca. */
     #custom_results::before {
         content: "";
         position: absolute;
-        bottom: 100%; left: 20px;
-        border: 8px solid transparent;
+        bottom: 100%;
+        left: 20px;
+        border: 10px solid transparent;
         border-bottom-color: white;
     }
 
     #custom_results div {
         color: #333;
-        padding: 10px 18px;
+        padding: 12px 20px;
         cursor: pointer;
-        font-family: 'Lato', sans-serif;
-        font-size: 0.88rem;
+        font-size: 0.9rem;
         border-bottom: 1px solid #eee;
+        text-transform: uppercase;
     }
 
-    #custom_results div:last-child { border-bottom: none; }
-    #custom_results div:hover { background: #f5f0ea; }
+    #custom_results div:last-child {
+        border-bottom: none;
+    }
 
-    /* select condizioni custom */
-    .select-custom-wrapper { position: relative; cursor: pointer; }
+    #custom_results div:hover {
+        background: #f0f0f0;
+        border-radius: 8px;
+    }
+
+    /* Wrapper custom per un dropdown simulato con opzioni personalizzate. */
+    .select-custom-wrapper {
+        position: relative;
+        cursor: pointer;
+    }
+
     .select-trigger {
-        background: #1a1a1a;
-        border: 1px solid #333;
-        padding: 10px 14px;
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+        padding: 12px;
         border-radius: 8px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-family: 'Lato', sans-serif;
-        font-size: 0.9rem;
-        color: #fff;
+        color: #1a1a1a;
     }
+
+    /* Menu a discesa nascosto che appare solo quando si clicca sul trigger. */
     .select-options-cond {
         position: absolute;
         width: 100%;
-        background: #1e1e1e;
-        border: 1px solid #333;
+        background: #f5f5f5;
+        border: 1px solid #ccc;
         border-radius: 8px;
         z-index: 100;
         display: none;
-        margin-top: 4px;
-        overflow: hidden;
+        margin-top: 5px;
     }
-    .select-options-cond div {
-        padding: 10px 14px;
-        border-bottom: 1px solid #2a2a2a;
-        font-family: 'Lato', sans-serif;
-        font-size: 0.88rem;
-        color: #e0e0e0;
-    }
-    .select-options-cond div:last-child { border-bottom: none; }
-    .select-options-cond div:hover { background: #2a2a2a; }
 
-    /* upload immagini */
+    .select-options-cond div {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        color: #1a1a1a;
+        cursor: pointer;
+    }
+
+    .select-options-cond div:hover {
+        background: #ebebeb;
+    }
+
     .upload-container {
-        border: 2px dashed #333;
+        border: 2px dashed #ccc;
         padding: 20px;
         text-align: center;
         border-radius: 10px;
         cursor: pointer;
-        font-family: 'Lato', sans-serif;
-        color: #a89880;
-        font-size: 0.9rem;
-        transition: border-color 0.2s;
+        margin-top: 10px;
     }
-    .upload-container:hover { border-color: #9c6b3c; }
 
-    .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-    .preview-item { position: relative; height: 80px; }
-    .preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .preview-item {
+        position: relative;
+        height: 80px;
+    }
+
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
     .remove-img {
-        position: absolute; top: -5px; right: -5px;
-        background: #c0392b; color: white;
-        border: none; border-radius: 50%;
-        width: 20px; height: 20px;
-        cursor: pointer; font-size: 11px;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        font-size: 12px;
     }
 
     .btn-submit {
         background: #b58d5b;
         color: white;
         width: 100%;
-        padding: 14px;
+        padding: 15px;
         border: none;
-        border-radius: 8px;
-        font-family: 'DM Sans', sans-serif;
-        font-weight: 600;
+        border-radius: 10px;
+        font-weight: bold;
         text-transform: uppercase;
-        letter-spacing: 3px;
-        font-size: 0.75rem;
+        letter-spacing: 2px;
         cursor: pointer;
-        transition: background 0.2s;
+        margin-top: 2rem;
     }
-    .btn-submit:hover { background: #9c6b3c; }
+
+    /* Layout responsive del form */
+
+    .btn-submit:hover {
+        background: #a07840;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 1.5rem;
+    }
 </style>
 
-<<div class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
-    <div class="annuncio-card p-4 p-md-5 w-100" style="max-width: 620px;">
+<div class="annuncio-card">
+    <h2>Pubblica Annuncio</h2>
 
-        <h2 class="text-center mb-4">Pubblica Annuncio</h2>
+    <form action="index.php?page=annunci&action=store" method="post" enctype="multipart/form-data" id="publishForm">
+        <input type="hidden" name="id_libro" id="id_libro_hidden">
+        <input type="hidden" name="condizioni" id="condizioni_hidden" value="Nuovo (Mai aperto)">
 
-        <form action="index.php?page=annunci&action=store" method="post" enctype="multipart/form-data" id="publishForm">
-            <input type="hidden" name="id_libro" id="id_libro_hidden">
-            <input type="hidden" name="condizioni" id="condizioni_hidden" value="Nuovo (Mai aperto)">
+        <div style="margin-bottom: 1.5rem;" class="search-container">
+            <label>Titolo del Libro</label>
+            <input type="text" id="search" oninput="get_libri()" placeholder="Titolo" autocomplete="off">
+            <div id="custom_results"></div>
+        </div>
 
-            <!-- Titolo libro -->
-            <div class="mb-3 position-relative search-container">
-                <label class="form-label">Titolo del Libro</label>
-                <input type="text" id="search" class="form-control"
-                       oninput="get_libri()" placeholder="Cerca titolo..." autocomplete="off">
-                <div id="custom_results"></div>
+        <div style="margin-bottom: 1.5rem;">
+            <label>ISBN</label>
+            <input type="text" name="isbn" id="isbn_input" placeholder="Codice ISBN">
+        </div>
+
+        <div class="form-grid">
+            <div>
+                <label>Prezzo (€)</label>
+                <input type="number" step="0.01" name="prezzo_vendita" id="prezzoInput" placeholder="es. 12.50"
+                    min="0.01" max="200.00" required>
             </div>
-
-            <!-- ISBN -->
-            <div class="mb-3">
-                <label class="form-label">ISBN</label>
-                <input type="text" name="isbn" id="isbn_input" class="form-control" placeholder="Codice ISBN">
+            <div>
+                <label>Luogo di Scambio</label>
+                <input type="text" name="luogo" placeholder="Es. Biblioteca" required>
             </div>
+        </div>
 
-            <!-- Prezzo e Luogo -->
-            <div class="row g-3 mb-3">
-                <div class="col-6">
-                    <label class="form-label">Prezzo (€)</label>
-                    <input type="number" step="0.01" name="prezzo_vendita" id="prezzoInput"
-                           class="form-control" value="0.00" min="0" required>
-                </div>
-                <div class="col-6">
-                    <label class="form-label">Luogo di Scambio</label>
-                    <input type="text" name="luogo" class="form-control" placeholder="Es. Biblioteca" required>
-                </div>
+        <div class="form-grid">
+            <div>
+                <label>Data</label>
+                <input type="date" name="data" value="<?= date('Y-m-d') ?>" required>
             </div>
-
-            <!-- Data e Ora -->
-            <div class="row g-3 mb-3">
-                <div class="col-6">
-                    <label class="form-label">Data</label>
-                    <input type="date" name="data" class="form-control" value="<?= date('Y-m-d') ?>" required>
-                </div>
-                <div class="col-6">
-                    <label class="form-label">Ora</label>
-                    <input type="time" name="ora" class="form-control" value="<?= date('H:i') ?>" required>
-                </div>
+            <div>
+                <label>Ora</label>
+                <input type="time" name="ora" value="<?= date('H:i') ?>" required>
             </div>
+        </div>
 
-            <!-- Condizioni -->
-            <div class="mb-3">
-                <label class="form-label">Condizioni del libro</label>
-                <div class="select-custom-wrapper" id="condizioniWrapper">
-                    <div class="select-trigger" onclick="toggleCondizioni()">
-                        <span id="selectedCondizione">Nuovo (Mai aperto)</span>
-                        <span style="font-size: 10px; color: #9c6b3c;">▼</span>
-                    </div>
-                    <div class="select-options-cond" id="condizioniOptions">
-                        <div onclick="selectCondizione('Nuovo (Mai aperto)')">Nuovo (Mai aperto)</div>
-                        <div onclick="selectCondizione('Ottime condizioni')">Ottime condizioni</div>
-                        <div onclick="selectCondizione('Buone condizioni')">Buone condizioni</div>
-                        <div onclick="selectCondizione('Usato / Rovinato')">Usato / Rovinato</div>
-                    </div>
+        <div style="margin-bottom: 1.5rem;">
+            <label>Condizioni del libro</label>
+            <div class="select-custom-wrapper" id="condizioniWrapper">
+                <div class="select-trigger" onclick="toggleCondizioni()">
+                    <span id="selectedCondizione">Nuovo (Mai aperto)</span>
+                    <span style="font-size: 10px; color: #9c6b3c;">▼</span>
+                </div>
+                <div class="select-options-cond" id="condizioniOptions">
+                    <div onclick="selectCondizione('Nuovo (Mai aperto)')">Nuovo (Mai aperto)</div>
+                    <div onclick="selectCondizione('Ottime condizioni')">Ottime condizioni</div>
+                    <div onclick="selectCondizione('Buone condizioni')">Buone condizioni</div>
+                    <div onclick="selectCondizione('Usato / Rovinato')">Usato / Rovinato</div>
                 </div>
             </div>
+        </div>
 
-            <!-- Immagini -->
-            <div class="mb-4">
-                <label class="form-label">Immagini (Max 3)</label>
-                <div class="upload-container" onclick="document.getElementById('fileInput').click()">
-                    Aggiungi fino a 3 immagini<br><small>Clicca qui</small>
-                    <input type="file" id="fileInput" name="foto[]" multiple accept="image/*"
-                           style="display:none" onchange="previewImages(this.files)">
-                </div>
-                <div id="previewGrid" class="preview-grid"></div>
-            </div>
+        <label>Immagini (Max 3)</label>
+        <div class="upload-container" onclick="document.getElementById('fileInput').click()">
+            <span style="color: #7a6040; font-size: 0.9rem;">Aggiungi fino a 3 immagini<br><small>Clicca
+                    qui</small></span>
+            <input type="file" id="fileInput" name="foto[]" multiple accept="image/*" style="display:none"
+                onchange="previewImages(this.files)">
+        </div>
+        <div id="previewGrid" class="preview-grid"></div>
 
-            <button type="submit" class="btn-submit">Pubblica Annuncio</button>
-        </form>
-
-    </div>
+        <button type="submit" class="btn-submit">Pubblica Annuncio</button>
+    </form>
 </div>
 
 <script>
-    // Logica JavaScript rimasta intatta
+    // Funzione autocomplete che interroga il file libri.php mentre l'utente digita.
+    // Riempie una lista di risultati cliccabili e imposta l'ID del libro nascosto.
     function get_libri() {
         let cerca = document.getElementById('search').value;
         let container = document.getElementById('custom_results');
         let hiddenInput = document.getElementById('id_libro_hidden');
         let isbnInput = document.getElementById('isbn_input');
 
-        if (cerca.length < 2) { 
-            container.style.display = 'none'; 
+        if (cerca.length < 2) {
+            container.style.display = 'none';
             hiddenInput.value = "";
-            return; 
+            return;
         }
 
         fetch("libri.php?get_libri&testo=" + encodeURIComponent(cerca))
-        .then(res => res.json())
-        .then(data => {
-            container.innerHTML = "";
-            if (data.length > 0) {
-                container.style.display = 'block';
-                data.forEach(riga => {
-                    let item = document.createElement('div');
-                    let titolo = riga.Titolo || riga.titolo;
-                    let isbn = riga.ISBN || riga.isbn;
-                    let id = riga.ID_Libro || riga.id_libro;
-                    item.innerText = titolo;
-                    item.onclick = function() {
-                        document.getElementById('search').value = titolo;
-                        hiddenInput.value = id;
-                        if(isbnInput) isbnInput.value = isbn || "";
-                        container.style.display = 'none';
-                    };
-                    container.appendChild(item);
-                });
-            } else { container.style.display = 'none'; }
-        });
+            .then(res => res.json())
+            .then(data => {
+                container.innerHTML = "";
+                if (data.length > 0) {
+                    container.style.display = 'block';
+                    data.forEach(riga => {
+                        let item = document.createElement('div');
+                        let titolo = riga.Titolo || riga.titolo;
+                        let isbn = riga.ISBN || riga.isbn;
+                        let id = riga.ID_Libro || riga.id_libro;
+                        item.innerText = titolo;
+                        item.onclick = function () {
+                            document.getElementById('search').value = titolo;
+                            hiddenInput.value = id;
+                            if (isbnInput) isbnInput.value = isbn || "";
+                            container.style.display = 'none';
+                        };
+                        container.appendChild(item);
+                    });
+                } else { container.style.display = 'none'; }
+            });
     }
 
+    // Mostra/nasconde il menu a tendina per scegliere le condizioni del libro.
     function toggleCondizioni() {
         const o = document.getElementById('condizioniOptions');
         o.style.display = o.style.display === 'block' ? 'none' : 'block';
     }
 
+    // Aggiorna la condizione selezionata e la memorizza in un input nascosto.
     function selectCondizione(val) {
         document.getElementById('selectedCondizione').innerText = val;
         document.getElementById('condizioni_hidden').value = val;
@@ -303,6 +350,8 @@
     }
 
     let imagesArray = [];
+    // Preview locali delle immagini caricate prima dell'invio.
+    // Limita a massimo 3 immagini per annuncio.
     function previewImages(files) {
         const grid = document.getElementById('previewGrid');
         if (imagesArray.length + files.length > 3) { alert("Max 3 immagini!"); return; }
@@ -312,7 +361,7 @@
             reader.onload = (e) => {
                 const div = document.createElement('div');
                 div.className = 'preview-item';
-                div.innerHTML = `<img src="${e.target.result}"><button type="button" class="remove-img" onclick="removeImg(${imagesArray.length-1})">✕</button>`;
+                div.innerHTML = `<img src="${e.target.result}"><button type="button" class="remove-img" onclick="removeImg(${imagesArray.length - 1})">✕</button>`;
                 grid.appendChild(div);
             };
             reader.readAsDataURL(file);
@@ -327,7 +376,7 @@
         previewImages(currentFiles);
     }
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!document.getElementById('search').contains(e.target)) {
             document.getElementById('custom_results').style.display = 'none';
         }
