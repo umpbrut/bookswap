@@ -10,22 +10,16 @@ class AnnunciModel{
         $this->pdo=DB::connect();
     }
 
-    // public function selectAll(array $param=[]) : array{
-    //     $dql = "SELECT * FROM Annunci
-    //             JOIN Libri using(id_libro)
-    //             JOIN Immagini using(id_annuncio)";
-
-    //     $stm = $this->pdo->prepare($dql);
-    //     $stm->execute($param);
-    //     return $stm->fetchAll(PDO::FETCH_ASSOC);
-    // }
-
     public function selectAll(array $param=[]) : array{
-        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
-                GROUP_CONCAT(Immagini.link) as immagini
+        // Passiamo per Libri_Associazioni (tabella ponte) per ottenere materia, corso e classe
+        // DISTINCT evita duplicati causati da più righe in Libri_Associazioni
+        // ORDER BY id_immagine mantiene sempre lo stesso ordine di inserimento
+        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia,
+                GROUP_CONCAT(DISTINCT Immagini.link ORDER BY Immagini.id_immagine) as immagini
                 FROM Annunci
                 JOIN Libri USING(id_libro)
-                JOIN Materie USING(id_materia)
+                JOIN Libri_Associazioni ON Libri_Associazioni.id_libro = Libri.id_libro
+                JOIN Materie ON Materie.id_materia = Libri_Associazioni.id_materia
                 LEFT JOIN Immagini USING(id_annuncio)
                 GROUP BY id_annuncio";
 
@@ -34,25 +28,15 @@ class AnnunciModel{
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // public function selectAnnunciByUtente(array $param=[]) : array{
-    //     $id=$_SESSION['id_utente'];
-    //     $dql = "SELECT * FROM Annunci
-    //     JOIN Libri USING(id_libro)
-    //     WHERE id_creatore = $id";
-
-    //     $stm = $this->pdo->prepare($dql);
-    //     $stm->execute($param);
-    //     return $stm->fetchAll(PDO::FETCH_ASSOC);
-    // }
-
     public function selectAnnunciByUtente(array $param=[]) : array{
         $id = $_SESSION['id_utente'];
-        // Aggiungiamo la JOIN per le immagini e le materie
-        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
-                GROUP_CONCAT(Immagini.link) as immagini
+        // Stessa struttura di selectAll, filtrata per utente creatore
+        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia,
+                GROUP_CONCAT(DISTINCT Immagini.link ORDER BY Immagini.id_immagine) as immagini
                 FROM Annunci
                 JOIN Libri USING(id_libro)
-                JOIN Materie USING(id_materia)
+                JOIN Libri_Associazioni ON Libri_Associazioni.id_libro = Libri.id_libro
+                JOIN Materie ON Materie.id_materia = Libri_Associazioni.id_materia
                 LEFT JOIN Immagini USING(id_annuncio)
                 WHERE id_creatore = $id
                 GROUP BY id_annuncio"; // GROUP BY è vitale per non duplicare le righe
@@ -63,9 +47,13 @@ class AnnunciModel{
     }
 
     public function selectAnnuncio(array $param=[]) : array{
-        $dql = "SELECT * FROM Annunci
-                JOIN Libri using(id_libro)
-                WHERE id_annuncio = ? and id_libro = ?";
+        // Aggiungiamo la JOIN a Libri_Associazioni per recuperare anche materia/corso/classe
+        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia
+                FROM Annunci
+                JOIN Libri USING(id_libro)
+                JOIN Libri_Associazioni ON Libri_Associazioni.id_libro = Libri.id_libro
+                JOIN Materie ON Materie.id_materia = Libri_Associazioni.id_materia
+                WHERE id_annuncio = ? AND Annunci.id_libro = ?";
 
         $stm = $this->pdo->prepare($dql);
         $stm->execute($param);
@@ -121,27 +109,31 @@ class AnnunciModel{
     }
 
     public function selectByFiltri(array $param) : array {
-        // 1. Usiamo la stessa struttura di selectAll con GROUP_CONCAT e JOIN su Materie
-        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia, 
-                GROUP_CONCAT(Immagini.link) as immagini
+        // Base della query: JOIN a Libri_Associazioni per accedere a materia e classe
+        $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia,
+                GROUP_CONCAT(DISTINCT Immagini.link ORDER BY Immagini.id_immagine) as immagini
                 FROM Annunci
                 JOIN Libri USING(id_libro)
-                JOIN Materie USING(id_materia)
+                JOIN Libri_Associazioni ON Libri_Associazioni.id_libro = Libri.id_libro
+                JOIN Materie ON Materie.id_materia = Libri_Associazioni.id_materia
+                JOIN Classi ON Classi.id_classe = Libri_Associazioni.id_classe
                 LEFT JOIN Immagini USING(id_annuncio)
                 WHERE Materie.id_materia LIKE ?
+                AND Classi.anno LIKE ?
                 AND Annunci.condizioni LIKE ?
                 AND Annunci.prezzo_vendita <= ?
                 GROUP BY id_annuncio"; // Fondamentale per non avere duplicati
 
-        // 2. Prepariamo i valori (gestendo i casi vuoti)
+        // Prepariamo i valori (se il filtro è vuoto usiamo % per "tutti")
         $id_materia = !empty($param['id_materia']) ? $param['id_materia'] : '%';
+        $classe     = !empty($param['classe'])     ? $param['classe']     : '%';
         $condizioni = !empty($param['condizioni']) ? $param['condizioni'] : '%';
         $prezzo_max = !empty($param['prezzo_max']) ? $param['prezzo_max'] : 999999;
 
         $stm = $this->pdo->prepare($dql);
-        $stm->execute([$id_materia, $condizioni, $prezzo_max]);
+        $stm->execute([$id_materia, $classe, $condizioni, $prezzo_max]);
         return $stm->fetchAll(PDO::FETCH_ASSOC);
-    }         
+    }
 
     public function selectMaterie() : array {
         $stm = $this->pdo->prepare("SELECT id_materia, nome FROM Materie");

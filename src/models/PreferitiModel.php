@@ -11,12 +11,15 @@ class PreferitiModel{
     }
 
     public function selectAll(array $param=[]) : array{
+        // Passiamo per Libri_Associazioni per recuperare la materia del libro
+        // DISTINCT evita duplicati, ORDER BY id_immagine mantiene l'ordine di inserimento
         $dql = "SELECT Annunci.*, Libri.*, Materie.nome as materia,
-                       GROUP_CONCAT(Immagini.link) as immagini
+                       GROUP_CONCAT(DISTINCT Immagini.link ORDER BY Immagini.id_immagine) as immagini
                 FROM Preferiti
                 JOIN Annunci USING(id_annuncio)
                 JOIN Libri USING(id_libro)
-                JOIN Materie USING(id_materia)
+                JOIN Libri_Associazioni ON Libri_Associazioni.id_libro = Libri.id_libro
+                JOIN Materie ON Materie.id_materia = Libri_Associazioni.id_materia
                 LEFT JOIN Immagini USING(id_annuncio)
                 WHERE Preferiti.id_utente = ?
                 GROUP BY Annunci.id_annuncio";
