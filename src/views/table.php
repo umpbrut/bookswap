@@ -17,7 +17,7 @@
         position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
         color: var(--muted); font-size: 15px; pointer-events: none;
     }
-
+ 
     /* FORM FILTRI */
     .filtri-form {
         display: flex; flex-wrap: wrap; gap: 12px;
@@ -52,7 +52,7 @@
         text-decoration: none; transition: all 0.2s;
     }
     .btn-azzera:hover { border-color: var(--gold); color: var(--gold); }
-
+ 
     /* GRIGLIA CARD */
     .annunci-grid {
         display: grid;
@@ -66,6 +66,7 @@
         transition: transform 0.3s, box-shadow 0.3s;
         position: relative;
         cursor: pointer;
+        display: flex; flex-direction: column;
     }
     .book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(60,40,20,0.14); }
     .heart-link {
@@ -86,7 +87,7 @@
         font-family: 'Cormorant Garamond', serif; font-size: 3rem;
         color: var(--gold); opacity: 0.45;
     }
-    .card-body { padding: 16px 18px 20px; }
+    .card-body { padding: 16px 18px 20px; flex-grow: 1; }
     .card-materia { font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
     .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400; line-height: 1.3; margin-bottom: 4px; }
     .card-autore { font-size: 0.76rem; color: var(--muted); margin-bottom: 14px; }
@@ -99,7 +100,7 @@
     }
     .empty { text-align: center; padding: 60px; color: var(--muted); font-size: 0.9rem; grid-column: 1/-1; }
     .nessun-risultato { display: none; text-align: center; padding: 60px; color: var(--muted); font-size: 0.9rem; grid-column: 1/-1; }
-
+ 
     /* ===================== MODAL ===================== */
     .modal-overlay {
         display: none;
@@ -110,7 +111,7 @@
         padding: 20px;
     }
     .modal-overlay.aperta { display: flex; }
-
+ 
     .modal-box {
         background: var(--bg);
         border-radius: 14px;
@@ -125,7 +126,7 @@
         from { opacity: 0; transform: translateY(28px) scale(0.97); }
         to   { opacity: 1; transform: translateY(0) scale(1); }
     }
-
+ 
     .modal-inner {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -134,7 +135,7 @@
     @media (max-width: 620px) {
         .modal-inner { grid-template-columns: 1fr; }
     }
-
+ 
     /* Colonna sinistra: galleria */
     .modal-gallery {
         padding: 28px 20px 28px 28px;
@@ -163,7 +164,7 @@
     .gallery-arrow:hover { background: white; }
     .gallery-arrow.prev { left: 10px; }
     .gallery-arrow.next { right: 10px; }
-
+ 
     .gallery-thumbs {
         display: flex; gap: 8px; flex-wrap: wrap;
     }
@@ -180,7 +181,7 @@
     }
     .gallery-thumb.attiva { border-color: var(--gold); opacity: 1; }
     .gallery-thumb:hover { opacity: 0.85; }
-
+ 
     /* Colonna destra: dettagli */
     .modal-dettagli {
         padding: 28px 28px 28px 20px;
@@ -227,14 +228,41 @@
     }
     .modal-btn-preferiti:hover { background: var(--gold2); }
     .modal-btn-preferiti.nascosto { display: none; }
+ 
+    /*bottone ordina*/
+    .btn-ordina-card {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background: var(--ink);
+        color: white;
+        text-decoration: none;
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-align: center;
+        transition: background 0.2s;
+    }
+    .btn-ordina-card:hover { background: var(--gold); }
+ 
+    /* Stile per il tasto Ordina nella Modal */
+    .modal-btn-ordina {
+        display: block; width: 100%;
+        padding: 13px; background: var(--ink); color: white;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase;
+        text-align: center; text-decoration: none; border-radius: 6px;
+        transition: background 0.2s; margin-top: 10px;
+    }
+    .modal-btn-ordina:hover { background: var(--gold); }
 </style>
-
+ 
 <!-- RICERCA TESTO (JS, filtra le card già in pagina) -->
 <div class="search-wrap">
     <span class="search-icon">&#9906;</span>
     <input type="text" id="search" placeholder="Cerca titolo o autore..." oninput="filtra()">
 </div>
-
+ 
 <!--
     FILTRI (form GET → controller → model → DB)
     Il controller legge $_GET e chiama selectAll() oppure selectByFiltri()
@@ -243,7 +271,7 @@
 <form class="filtri-form" method="GET" action="index.php">
     <input type="hidden" name="page" value="annunci">
     <input type="hidden" name="action" value="index">
-
+ 
     <div>
         <label>Materia</label>
         <select name="id_materia">
@@ -256,7 +284,7 @@
             <?php endforeach; ?>
         </select>
     </div>
-
+ 
     <div>
         <label>Classe</label>
         <select name="classe">
@@ -269,14 +297,14 @@
             <?php endforeach; ?>
         </select>
     </div>
-
+ 
     <div>
         <label>Prezzo max (€)</label>
         <input type="number" name="prezzo_max" min="0" step="0.50"
                placeholder="es. 20"
                value="<?= htmlspecialchars($_GET['prezzo_max'] ?? '') ?>">
     </div>
-
+ 
     <div>
         <label>Condizioni</label>
         <select name="condizioni">
@@ -290,11 +318,11 @@
             <?php endforeach; ?>
         </select>
     </div>
-
+ 
     <button type="submit" class="btn-filtra">Filtra</button>
     <a href="index.php?page=annunci&action=index" class="btn-azzera">Azzera</a>
 </form>
-
+ 
 <!-- GRIGLIA: dati dal DB via $table -->
 <div class="annunci-grid" id="annunci-grid">
     <?php if (!empty($table)): ?>
@@ -304,6 +332,7 @@
              data-autore="<?= htmlspecialchars(strtolower($a['autore'] ?? '')) ?>"
              data-id="<?= $a['id_annuncio'] ?>"
              data-id-libro="<?= $a['id_libro'] ?>"
+             data-id-creatore="<?= $a['id_creatore'] ?>"
              data-materia="<?= htmlspecialchars($a['materia'] ?? '') ?>"
              data-titolo-full="<?= htmlspecialchars($a['titolo'] ?? '') ?>"
              data-autore-full="<?= htmlspecialchars($a['autore'] ?? '') ?>"
@@ -315,19 +344,19 @@
              data-stato="<?= htmlspecialchars($a['stato'] ?? 'Disponibile') ?>"
              data-immagini="<?= htmlspecialchars($a['immagini'] ?? '') ?>"
              onclick="apriModal(this)">
-
+ 
             <?php if (isset($_SESSION['id_utente'])): ?>
             <a href="index.php?page=preferiti&action=store&id_annuncio=<?= $a['id_annuncio'] ?>"
                class="heart-link" title="Aggiungi ai preferiti"
                onclick="event.stopPropagation()">❤️</a>
             <?php endif; ?>
-
-            <?php 
+ 
+            <?php
                 // Prendiamo la prima immagine del gruppo (se esiste)
                 $links = !empty($a['immagini']) ? explode(',', $a['immagini']) : [];
                 $img1 = !empty($links) ? $links[0] : null;
             ?>
-
+ 
             <div class="card-img-container" style="width:100%; aspect-ratio:3/4; overflow:hidden; background:#f0f0f0;">
                 <?php if ($img1): ?>
                     <img src="<?= $img1 ?>" alt="Copertina" style="width:100%; height:100%; object-fit:cover;">
@@ -335,16 +364,24 @@
                     <div class="card-img-placeholder" style="height:100%; display:flex; align-items:center; justify-content:center;">&#9413;</div>
                 <?php endif; ?>
             </div>
-
+ 
             <div class="card-body">
                 <p class="card-materia"><?= htmlspecialchars($a['materia'] ?? '') ?></p>
                 <h3 class="card-title"><?= htmlspecialchars($a['titolo'] ?? '') ?></h3>
                 <p class="card-autore"><?= htmlspecialchars($a['autore'] ?? '') ?></p>
                 <div class="card-footer">
                     <span class="card-price">€ <?= number_format($a['prezzo_vendita'] ?? 0, 2, ',', '.') ?></span>
-                    <span class="card-cond"><?= htmlspecialchars($a['condizioni'] ?? '') ?></span>
+                      <span class="card-cond"><?= htmlspecialchars($a['condizioni'] ?? '') ?></span>
                 </div>
             </div>
+
+            <?php if(isset($_SESSION['id_utente']) && $_SESSION['id_utente'] != $a['id_creatore']): ?>
+                <a href="index.php?page=ordini&action=ordina&id_annuncio=<?= $a['id_annuncio'] ?>"
+                   class="btn-ordina-card"
+                   onclick="event.stopPropagation(); return confirm('Vuoi ordinare questo libro?')">
+                   📦 Ordina
+                </a>
+            <?php endif; ?>
 
         </div>
         <?php endforeach; ?>
@@ -353,12 +390,12 @@
         <p class="empty">Nessun annuncio disponibile.</p>
     <?php endif; ?>
 </div>
-
+ 
 <!-- ==================== MODAL DETTAGLIO ==================== -->
 <div class="modal-overlay" id="modal-overlay" onclick="chiudiSeOverlay(event)">
     <div class="modal-box" role="dialog" aria-modal="true">
         <div class="modal-inner">
-
+ 
             <!-- GALLERIA: 1 immagine grande + 3 thumbnails sotto -->
             <div class="modal-gallery">
                 <div class="gallery-main" id="modal-img-main">
@@ -372,17 +409,17 @@
                     <div class="gallery-thumb" onclick="selezionaThumb(2)">&#9413;</div>
                 </div>
             </div>
-
+ 
             <!-- DETTAGLI -->
             <div class="modal-dettagli">
                 <button class="modal-chiudi" onclick="chiudiModal()" aria-label="Chiudi">&#10005;</button>
-
+ 
                 <p class="modal-materia" id="modal-materia"></p>
                 <h2 class="modal-titolo" id="modal-titolo"></h2>
                 <p class="modal-autore" id="modal-autore"></p>
-
+ 
                 <div class="modal-divider"></div>
-
+ 
                 <div class="modal-info-riga">
                     <span class="modal-info-label">Stato annuncio</span>
                     <span class="modal-info-val" id="modal-stato"></span>
@@ -399,26 +436,27 @@
                     <span class="modal-info-label">Luogo</span>
                     <span class="modal-info-val" id="modal-luogo"></span>
                 </div>
-
+ 
                 <div class="modal-divider"></div>
-
+ 
                 <div class="modal-prezzo-big" id="modal-prezzo"></div>
                 <span class="modal-cond-badge" id="modal-condizioni"></span>
-
+ 
                 <a href="#" class="modal-btn-preferiti" id="modal-btn-preferiti">&#10084;&#65039; Aggiungi ai preferiti</a>
+                <a href="#" class="modal-btn-ordina" id="modal-btn-ordina" onclick="return confirm('Vuoi confermare l\'ordine?')">📦 Ordina Libro</a>
             </div>
-
+ 
         </div>
     </div>
 </div>
-
+ 
 <script>
     /* ---- Ricerca testo: logica originale invariata ---- */
     function filtra() {
         let cerca = document.getElementById('search').value.toLowerCase();
         let cards = document.querySelectorAll('.book-card');
         let trovati = 0;
-
+ 
         for (let card of cards) {
             if (card.dataset.titolo.includes(cerca) || card.dataset.autore.includes(cerca)) {
                 card.style.display = '';
@@ -427,16 +465,16 @@
                 card.style.display = 'none';
             }
         }
-
+ 
         let msg = document.getElementById('nessun-risultato');
         if (msg) msg.style.display = trovati === 0 ? 'block' : 'none';
     }
-
+ 
     /* ---- Modal ---- */
     let immagineCorrente = 0;
     const NUM_IMMAGINI = 3; // In futuro si potrebbe passare dal DB
     let elencoImmagini = []; // Variabile globale per le immagini dell'annuncio aperto
-
+ 
     function apriModal(card) {
         // Popola i campi con i data-attribute della card
         document.getElementById('modal-materia').textContent    = card.dataset.materia    || '';
@@ -448,7 +486,7 @@
         document.getElementById('modal-data').textContent       = card.dataset.data        || '—';
         document.getElementById('modal-ora').textContent        = card.dataset.ora         || '—';
         document.getElementById('modal-luogo').textContent      = card.dataset.luogo       || '—';
-
+ 
         // Bottone preferiti: visibile solo se utente loggato
         let btnPref = document.getElementById('modal-btn-preferiti');
         let sessione = <?= isset($_SESSION['id_utente']) ? 'true' : 'false' ?>;
@@ -458,49 +496,61 @@
         } else {
             btnPref.classList.add('nascosto');
         }
-
+ 
+        // Gestione Bottone Ordina nella Modal
+        let btnOrdina = document.getElementById('modal-btn-ordina');
+        let idCreatore = card.dataset.idCreatore; // Assicurati di aggiungere data-id-creatore alla card
+        let idUtenteLoggato = <?= $_SESSION['id_utente'] ?? 'null' ?>;
+ 
+        if (idUtenteLoggato && idUtenteLoggato != idCreatore && card.dataset.stato === 'Disponibile') {
+            btnOrdina.style.display = 'block';
+            btnOrdina.href = 'index.php?page=ordini&action=ordina&id_annuncio=' + card.dataset.id;
+        } else {
+            btnOrdina.style.display = 'none';
+        }
+ 
         // Gestione immagini
         const stringaImmagini = card.dataset.immagini;
         elencoImmagini = stringaImmagini ? stringaImmagini.split(',') : [];
-        
+       
         immagineCorrente = 0;
         aggiornaGalleria();
-
+ 
         document.getElementById('modal-overlay').classList.add('aperta');
         document.body.style.overflow = 'hidden';
     }
-
+ 
     function chiudiModal() {
         document.getElementById('modal-overlay').classList.remove('aperta');
         document.body.style.overflow = '';
     }
-
+ 
     function chiudiSeOverlay(e) {
         if (e.target === document.getElementById('modal-overlay')) chiudiModal();
     }
-
+ 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') chiudiModal();
     });
-
+ 
     function cambiaImmagine(dir) {
         immagineCorrente = (immagineCorrente + dir + NUM_IMMAGINI) % NUM_IMMAGINI;
         aggiornaGalleria();
     }
-
+ 
     function selezionaThumb(idx) {
         immagineCorrente = idx;
         aggiornaGalleria();
     }
-
+ 
     function aggiornaGalleria() {
         const mainBox = document.getElementById('modal-img-main');
         const thumbsContainer = document.getElementById('gallery-thumbs');
         const placeholderIcon = document.getElementById('modal-placeholder-icon');
-
+ 
         // Svuota le miniature precedenti
         thumbsContainer.innerHTML = '';
-
+ 
         if (elencoImmagini.length > 0) {
             // Mostra immagine principale
             placeholderIcon.style.display = 'none';
@@ -513,7 +563,7 @@
             }
             imgMain.src = elencoImmagini[immagineCorrente];
             imgMain.style.display = 'block';
-
+ 
             // Crea le miniature
             elencoImmagini.forEach((src, i) => {
                 let thumb = document.createElement('div');
@@ -529,6 +579,6 @@
         }
     }
 </script>
-
-<!-- i data-attribute sulla card servono solo a passare i dati già caricati dal DB alla modal via JavaScript — 
+ 
+<!-- i data-attribute sulla card servono solo a passare i dati già caricati dal DB alla modal via JavaScript —
  non c'è nessuna chiamata aggiuntiva al server, i dati vengono dal $table che il controller già fornisce. -->

@@ -101,6 +101,72 @@
             display: flex; justify-content: space-between; align-items: center;
             font-size: 0.7rem; color: var(--muted); background: white;
         }
+
+        /* DROPDOWN CONTAINER */
+        #menu-toggle {
+            display: none;
+        }
+
+        /* Titolo della tendina (ora è una Label) */
+        .dropdown-trigger {
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 0;
+            transition: color 0.3s;
+            user-select: none; /* Impedisce di evidenziare il testo al click */
+        }
+
+        /* La tendina: nascosta di default */
+        .dropdown-content {
+            display: none; 
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: var(--shadow);
+            border: 0.5px solid var(--border);
+            border-radius: 4px;
+            z-index: 1000;
+            padding: 10px 0;
+            margin-top: 10px;
+        }
+
+        /* LOGICA DI APERTURA: Se la checkbox è selezionata, mostra il fratello .dropdown-content */
+        #menu-toggle:checked ~ .dropdown-content {
+            display: block;
+        }
+
+        /* Cambia colore al testo quando è aperto */
+        #menu-toggle:checked ~ .dropdown-trigger {
+            color: var(--gold);
+        }
+
+        /* Link interni alla tendina */
+        .dropdown-content a {
+            color: var(--muted);
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.65rem;
+            border-bottom: none !important;
+            text-align: left;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--bg2);
+            color: var(--gold);
+        }
+
+        /* Freccetta */
+        .dropdown-trigger::after {
+            content: ' ▾';
+            font-size: 0.6rem;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -120,25 +186,27 @@ $page   = $_GET['page']   ?? 'annunci';
 
         <a href="index.php?page=annunci&action=create" class="nav-btn">+ Pubblica</a>
 
-        <a href="index.php?page=annunci&action=personal"
-           <?= ($page === 'annunci' && $action === 'personal') ? 'class="active"' : '' ?>>
-            I miei annunci
-        </a>
+        <div class="dropdown">
+            <input type="checkbox" id="menu-toggle">
+            
+            <label for="menu-toggle" class="dropdown-trigger">Area Personale</label>
 
-        <a href="index.php?page=preferiti&action=index"
-           <?= ($page === 'preferiti') ? 'class="active"' : '' ?>>
-            Preferiti
-        </a>
-        <?php if(isset($_SESSION['id_utente'])):?>
-            <a href="index.php?page=personal&action=index"
-            <?= ($page === 'personal') ? 'class="active"' : '' ?>>
-                Profilo
-            </a>
-        <?php else:?>
-            <a href="index.php?page=login&action=login">
-                Login
-            </a>
-        <?php endif;?>
+            <div class="dropdown-content">
+                <a href="index.php?page=annunci&action=personal">I miei annunci</a>
+                <a href="index.php?page=preferiti&action=index">Preferiti</a>
+                <a href="index.php?page=ordini&action=index">I miei ordini</a>
+                
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 5px 0;">
+                
+                <?php if(isset($_SESSION['id_utente'])):?>
+                    <a href="index.php?page=personal&action=index">Il mio Profilo</a>
+                    <a href="index.php?page=login&action=logout" style="color: #8B5E3C;">Logout</a>
+                <?php else:?>
+                    <a href="index.php?page=login&action=login">Login / Registrati</a>
+                <?php endif;?>
+            </div>
+        </div>
+        
         
     </nav>
 </header>
@@ -178,6 +246,13 @@ $page   = $_GET['page']   ?? 'annunci';
             <p class="eyebrow">La tua libreria</p>
             <h2 class="section-title">I miei preferiti</h2>
             <?php include 'table_preferiti.php'; ?>
+        </section>
+
+    <?php elseif ($page === 'ordini' && $action === 'index'): ?>
+        <section>
+            <p class="eyebrow">Area personale</p>
+            <h2 class="section-title">I miei ordini</h2>
+            <?php include 'table_ordini.php'; ?>
         </section>
 
     <?php endif; ?>

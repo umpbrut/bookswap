@@ -29,6 +29,7 @@ class AnnunciController{
 
         $filtri = array_filter([
             'id_materia' => $_GET['id_materia'] ?? '',
+            'classe'     => $_GET['classe']     ?? '',
             'condizioni' => $_GET['condizioni'] ?? '',
             'prezzo_max' => $_GET['prezzo_max'] ?? '',
         ]);
