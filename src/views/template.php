@@ -393,10 +393,12 @@
 
     </main>
 
+    <?php if (!isset($view) || $view !== 'views/annunci_update_form.php'): ?>
     <footer>
         <span>© 2026 re-book — ISIT Books</span>
         <span>Progetto scolastico</span>
     </footer>
+    <?php endif; ?>
 
 </body>
 

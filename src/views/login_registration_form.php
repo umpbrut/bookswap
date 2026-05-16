@@ -5,7 +5,7 @@
     <div class="col-12"><input type="text" name="num_tel" class="form-control" placeholder="Numero di telefono"
             required></div>
     <div class="col-12"><input type="email" name="email" class="form-control" placeholder="Email" required></div>
-    <div class="col-12"><input type="password" name="password" class="form-control" placeholder="Password" required>
+    <div class="col-12"><input type="password" name="password" class="form-control" placeholder="Password" required minlength="3">
     </div>
     <div class="col-12 d-grid"><input type="submit" value="SUBMIT" class="btn btn-success"></div>
 </form>
