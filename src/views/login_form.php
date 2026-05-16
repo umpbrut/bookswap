@@ -1,3 +1,4 @@
+<!-- Form base: invia i dati al controller di login per autenticazione o registrazione. -->
 <form action="index.php?page=login&action=check" method="post">
     <div class="mb-3">
         <input type="text" name="email" class="form-control" placeholder="Username/Email" required>

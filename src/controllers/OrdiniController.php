@@ -3,46 +3,57 @@ defined('APP') or die('Accesso Negato');
 
 require_once 'models/OrdiniModel.php';
 
-// Stessa costante definita in AnnunciController; la definiamo solo se non esiste già
+// Stessa costante definita in AnnunciController; la definiamo solo se non esiste già.
+// IMG_DIR serve per cancellare le immagini caricate quando l'ordine viene concluso.
 if (!defined('IMG_DIR')) {
     define('IMG_DIR', '/var/www/html/govoni/images/');
 }
 
-class OrdiniController {
+// Controller che gestisce gli ordini: acquisti, vendite, consegne e ripristini.
+class OrdiniController
+{
     private $model;
     private $page;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->model = new OrdiniModel();
-        $this->page  = 'ordini';
+        $this->page = 'ordini';
     }
 
-    private function proteggiPagina() {
+    // Protegge tutte le azioni riservate agli utenti autenticati.
+    private function proteggiPagina()
+    {
         if (!isset($_SESSION['id_utente'])) {
             header('Location: index.php?page=login&action=login');
             exit;
         }
     }
 
-    // index: mostra la pagina con i due tab (ordinati / venduti)
-    public function index() {
+    // Index: mostra la pagina ordini dell'utente, con due tab separati:
+    // - ordinati: gli acquisti effettuati dall'utente
+    // - venduti: le vendite concluse dall'utente
+    public function index()
+    {
         $this->proteggiPagina();
         $id = $_SESSION['id_utente'];
 
         $ordinati = $this->model->selectOrdinati([$id]);
-        $venduti  = $this->model->selectVenduti([$id]);
+        $venduti = $this->model->selectVenduti([$id]);
 
         include 'views/template.php';
     }
 
-    public function ordina() {
-    // 1. Protezione: devi essere loggato
+    // Ordina un annuncio: registra l'acquisto e segna l'annuncio come riservato.
+    public function ordina()
+    {
+        // 1. Protezione: l'utente deve essere autenticato.
         $this->proteggiPagina();
 
         $id_annuncio = $_GET['id_annuncio'] ?? 0;
         $id_compratore = $_SESSION['id_utente'];
 
-        // 2. Chiamata al model (la funzione la creiamo al punto 2)
+        // 2. Chiamata al model per inserire l'ordine nel database.
         $successo = $this->model->registraOrdine($id_annuncio, $id_compratore);
 
         if ($successo) {
@@ -55,16 +66,17 @@ class OrdiniController {
         exit;
     }
 
-    // consegna: segna l'ordine come concluso ed elimina le immagini fisiche
-    public function consegna() {
+    // Consegna: chiude l'ordine, libera l'annuncio e rimuove le immagini fisiche dal server.
+    public function consegna()
+    {
         $this->proteggiPagina();
 
         $id_annuncio = (int) ($_GET['id_annuncio'] ?? 0);
-        $id_utente   = $_SESSION['id_utente'];
+        $id_utente = $_SESSION['id_utente'];
 
         $links = $this->model->concludiOrdine([$id_annuncio, $id_utente]);
 
-        // Elimina i file fisici dal server
+        // Elimina i file fisici associati all'annuncio venduto.
         foreach ($links as $link) {
             $nomeFile = basename($link);
             $percorso = IMG_DIR . $nomeFile;
@@ -77,12 +89,13 @@ class OrdiniController {
         exit;
     }
 
-    // ripristina: annulla l'ordine, rimette l'annuncio disponibile
-    public function ripristina() {
+    // Ripristina un ordine annullato: rende nuovamente disponibile l'annuncio.
+    public function ripristina()
+    {
         $this->proteggiPagina();
 
         $id_annuncio = (int) ($_GET['id_annuncio'] ?? 0);
-        $id_utente   = $_SESSION['id_utente'];
+        $id_utente = $_SESSION['id_utente'];
 
         $this->model->ripristinaOrdine([$id_annuncio, $id_utente]);
 
