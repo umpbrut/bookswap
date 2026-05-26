@@ -233,7 +233,7 @@ defined('APP') or die('Accesso Negato');
                                     <hr class="my-1">
                                     <p class="text-muted small mb-2">Lascia vuoto per non cambiare la password</p>
                                     <input type="password" name="password" class="form-control"
-                                        placeholder="Nuova password">
+                                        placeholder="Nuova password" minlength="3">
                                 </div>
 
                                 <div class="col-12 d-grid mt-2">
